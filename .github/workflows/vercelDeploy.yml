@@ -4,11 +4,8 @@ name: Vercel-Deployment
 on: 
   workflow_dispatch:
     inputs:
-      panelId:
-        description: 'Panel Id of Flexpanel'     
-        required: true
-      versionId:
-        description: 'Published Version of the Panel'  
+      vercelJSON:
+        description: 'JSON Configuration for the Vercel Project'     
         required: true
       vercelToken:
         description: 'Access Token of the Deployed Vercel Account'
@@ -29,11 +26,11 @@ jobs:
         uses: actions/checkout@v2
 
       #Create vercel.json file to configure the deployment
-      - name: create-json
+      - name: Create JSON
         uses: jsdaniell/create-json@1.1.2
         with:
           name: "vercel.json"
-          json: '{ "name": ${{ github.event.inputs.panelId }}-${{ github.event.inputs.versionId }} }'
+          json: ${{ github.event.inputs.vercelJSON }}
 
       # Runs the Super-Linter action
       - name: Vercel Action
