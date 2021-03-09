@@ -4,12 +4,15 @@ name: Vercel-Deployment
 on: 
   workflow_dispatch:
     inputs:
-      logLevel:
-        description: 'version'     
+      panelId:
+        description: 'Panel Id of Flexpanel'     
         required: true
-        default: 'warning'
-      tags:
-        description: 'Test scenario tags'  
+      versionId:
+        description: 'Published Version of the Panel'  
+        required: true
+      vercelToken:
+        description: 'Access Token of the Deployed Vercel Account'
+        required: true
 
 jobs:
   # Set the job key. The key is displayed as the job name
@@ -25,9 +28,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      #Create vercel.json file to configure the deployment
+      - name: create-json
+        uses: jsdaniell/create-json@1.1.2
+        with:
+          name: "vercel.json"
+          json: '{ "name": ${{ github.event.inputs.panelId }}-${{ github.event.inputs.versionId }} }'
+
       # Runs the Super-Linter action
       - name: Vercel Action
         uses: amondnet/vercel-action@v20.0.0
         with:
-          vercel-token: 'aj7bxXweiP5PSFf7COKO7ipb' # Required
+          vercel-token: ${{ github.event.inputs.vercelToken }}
           vercel-args: '--confirm'
