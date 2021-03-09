@@ -1,7 +1,15 @@
 name: Vercel-Deployment
 
 # Run this workflow every time a new commit pushed to your repository
-# on: push
+on: 
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'version'     
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Test scenario tags'  
 
 jobs:
   # Set the job key. The key is displayed as the job name
