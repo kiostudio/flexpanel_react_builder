@@ -8,7 +8,7 @@ on:
         description: 'JSON Configuration for the Vercel Project'     
         required: true
       vercelToken:
-        description: 'Access Token of the Deployed Vercel Account'
+        description: 'Access Token of the Vercel Account'
         required: true
 
 jobs:
