@@ -32,7 +32,6 @@ jobs:
         uses: actions/checkout@v2
 
       # Create vercel.json file to configure the deployment
-      # {"name":"a75e23a4-8523-4932-bae2-471566222edd","env":{"PANEL_ID":"a75e23a4-8523-4932-bae2-471566222edd","VERSION_ID":"5ffc447b-703e-4032-bb26-570987ad4ad8"},"build":{"env":{"PANEL_ID":"a75e23a4-8523-4932-bae2-471566222edd","VERSION_ID":"5ffc447b-703e-4032-bb26-570987ad4ad8"}}}
       # {"name":"a75e23a4-8523-4932-bae2-471566222edd","build":{"env":{"PANEL_ID":"a75e23a4-8523-4932-bae2-471566222edd","VERSION_ID":"5ffc447b-703e-4032-bb26-570987ad4ad8"}}}
       - name: Create JSON
         uses: jsdaniell/create-json@1.1.2
