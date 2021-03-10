@@ -10,6 +10,12 @@ on:
       vercelToken:
         description: 'Access Token of the Vercel Account'
         required: true
+      panelID:
+        description: 'Panel Id of the Deployment'
+        required: true
+      versionID:
+        description: 'Version Id of the Deployment'
+        required: true
 
 jobs:
   # Set the job key. The key is displayed as the job name
@@ -25,7 +31,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      #Create vercel.json file to configure the deployment
+      # Create vercel.json file to configure the deployment
       - name: Create JSON
         uses: jsdaniell/create-json@1.1.2
         with:
@@ -35,6 +41,9 @@ jobs:
       # Runs the Super-Linter action
       - name: Vercel Action
         uses: amondnet/vercel-action@v20.0.0
+        env:
+            PANEL_ID: ${{ github.event.inputs.panelID }}
+            VERSION_ID: ${{ github.event.inputs.versionID }}
         with:
           vercel-token: ${{ github.event.inputs.vercelToken }}
           vercel-args: '--confirm'
