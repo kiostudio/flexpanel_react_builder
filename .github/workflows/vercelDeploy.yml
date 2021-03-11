@@ -10,6 +10,9 @@ on:
       vercelToken:
         description: 'Access Token of the Vercel Account'
         required: true
+      deploymentID:
+        description: 'Deployment ID of the Build'
+        required: true
       # panelID:
       #   description: 'Panel Id of the Deployment'
       #   required: true
