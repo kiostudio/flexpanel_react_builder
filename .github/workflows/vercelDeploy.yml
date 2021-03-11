@@ -31,10 +31,11 @@ jobs:
 
     steps:
       - name: Invoke deployment hook
-        uses: distributhor/workflow-webhook@v1
+        uses: joelwmale/webhook-action@master
         env:
-          webhook_url: "https://n2d37ssk5m.execute-api.us-east-1.amazonaws.com/default/flexpanelwebhookdeploy-dev"
-          webhook_secret: "YhVZ91SuqV3ZMShlIczYZ4OaWs1iUMwG6qtRSNuW"
+          url: "https://n2d37ssk5m.execute-api.us-east-1.amazonaws.com/default/flexpanelwebhookdeploy-dev"
+          headers: '{"x-api-key": "YhVZ91SuqV3ZMShlIczYZ4OaWs1iUMwG6qtRSNuW"}'
+          body: '{"event": "deployment", "repository": "joelwmale/webhook-action"}'
 
       # Checks out a copy of your repository on the ubuntu-latest machine
       - name: Checkout code
