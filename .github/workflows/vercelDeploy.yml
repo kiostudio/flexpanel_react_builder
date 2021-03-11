@@ -30,6 +30,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Invoke deployment hook
+        uses: distributhor/workflow-webhook@v1
+        env:
+          webhook_url: "https://n2d37ssk5m.execute-api.us-east-1.amazonaws.com/default/flexpanelwebhookdeploy-dev"
+          webhook_secret: "YhVZ91SuqV3ZMShlIczYZ4OaWs1iUMwG6qtRSNuW"
+
       # Checks out a copy of your repository on the ubuntu-latest machine
       - name: Checkout code
         uses: actions/checkout@v2
