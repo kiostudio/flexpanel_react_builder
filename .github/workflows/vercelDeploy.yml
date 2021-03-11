@@ -34,7 +34,7 @@ jobs:
         uses: joelwmale/webhook-action@master
         with:
           url: "https://n2d37ssk5m.execute-api.us-east-1.amazonaws.com/default/flexpanelwebhookdeploy-dev"
-          headers: '{"x-api-key": "YhVZ91SuqV3ZMShlIczYZ4OaWs1iUMwG6qtRSNuW"}'
+          headers: '{"x-api-key": ${{ secrets.AWS_WEBHOOK_API_KEY }}}'
           body: '{"event": "deployment", "deploymentID": ${{ github.event.inputs.deploymentID }} }'
 
       # Checks out a copy of your repository on the ubuntu-latest machine
