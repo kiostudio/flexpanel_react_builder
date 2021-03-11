@@ -30,12 +30,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Invoke Deployment Hook
+      # Webhook Status Update
+      - name: Invoke Deployment Hook (Build Start)
         uses: joelwmale/webhook-action@master
         with:
           url: "https://n2d37ssk5m.execute-api.us-east-1.amazonaws.com/default/flexpanelwebhookdeploy-dev"
           headers: '{ "x-api-key": "${{ secrets.AWS_WEBHOOK_API_KEY }}" }'
-          body: '{"event": "deployment", "deploymentID": "${{ github.event.inputs.deploymentID }}" }'
+          body: '{"event": "deployment", "deploymentID": "${{ github.event.inputs.deploymentID }}", "status" : "buildStart" }'
 
       # Checks out a copy of your repository on the ubuntu-latest machine
       - name: Checkout code
@@ -49,9 +50,35 @@ jobs:
           name: "vercel.json"
           json: ${{ github.event.inputs.vercelJSON }}
 
+      # Webhook Status Update
+      - name: Invoke Deployment Hook (Deploy Start)
+        uses: joelwmale/webhook-action@master
+        with:
+          url: "https://n2d37ssk5m.execute-api.us-east-1.amazonaws.com/default/flexpanelwebhookdeploy-dev"
+          headers: '{ "x-api-key": "${{ secrets.AWS_WEBHOOK_API_KEY }}" }'
+          body: '{"event": "deployment", "deploymentID": "${{ github.event.inputs.deploymentID }}", "status" : "deployVercelStart" }'
+
       # Runs the Super-Linter action
       - name: Vercel Action
         uses: amondnet/vercel-action@v20.0.0
         with:
           vercel-token: ${{ github.event.inputs.vercelToken }}
           vercel-args: '--prod --confirm'
+
+      # Webhook Status Update
+      - name: Invoke Deployment Hook (Deploy Success)
+        if: ${{ success() }}
+        uses: joelwmale/webhook-action@master
+        with:
+          url: "https://n2d37ssk5m.execute-api.us-east-1.amazonaws.com/default/flexpanelwebhookdeploy-dev"
+          headers: '{ "x-api-key": "${{ secrets.AWS_WEBHOOK_API_KEY }}" }'
+          body: '{"event": "deployment", "deploymentID": "${{ github.event.inputs.deploymentID }}", "status" : "deployVercelSuccess" }'
+
+      # Webhook Status Update
+      - name: Invoke Deployment Hook (Deploy Fail)
+        if: ${{ failure() }}
+        uses: joelwmale/webhook-action@master
+        with:
+          url: "https://n2d37ssk5m.execute-api.us-east-1.amazonaws.com/default/flexpanelwebhookdeploy-dev"
+          headers: '{ "x-api-key": "${{ secrets.AWS_WEBHOOK_API_KEY }}" }'
+          body: '{"event": "deployment", "deploymentID": "${{ github.event.inputs.deploymentID }}", "status" : "deployVercelFail" }'
