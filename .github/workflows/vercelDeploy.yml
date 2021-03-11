@@ -56,7 +56,7 @@ jobs:
         with:
           url: "https://n2d37ssk5m.execute-api.us-east-1.amazonaws.com/default/flexpanelwebhookdeploy-dev"
           headers: '{ "x-api-key": "${{ secrets.AWS_WEBHOOK_API_KEY }}" }'
-          body: '{"event": "deployment", "deploymentID": "${{ github.event.inputs.deploymentID }}", "status" : "deployVercelStart" }'
+          body: '{event: "deployment", deploymentID: "${{ github.event.inputs.deploymentID }}", status : "deployVercelStart" }'
 
       # Runs the Super-Linter action
       - name: Vercel Action
