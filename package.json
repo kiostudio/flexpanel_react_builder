@@ -3,13 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "PANEL_ID='a75e23a4-8523-4932-bae2-471566222edd' VERSION_ID='5ffc447b-703e-4032-bb26-570987ad4ad8' GRAPHQL_API_KEY='da2-2hwjj5un6rempchkqdmjci2vfe' GRAPHQL_ENDPOINT='https://ps4ky2nur5crxkjfkldkifixk4.appsync-api.us-east-1.amazonaws.com/graphql' next dev",
-    "build": "next build",
+    "dev": "PANEL_ID='a75e23a4-8523-4932-bae2-471566222edd' VERSION_ID='23ecc35c-1ea9-4f59-af6d-efe20f85f815' GRAPHQL_API_KEY='da2-2hwjj5un6rempchkqdmjci2vfe' GRAPHQL_ENDPOINT='https://ps4ky2nur5crxkjfkldkifixk4.appsync-api.us-east-1.amazonaws.com/graphql' next dev",
+    "build": "PANEL_ID='a75e23a4-8523-4932-bae2-471566222edd' VERSION_ID='23ecc35c-1ea9-4f59-af6d-efe20f85f815' GRAPHQL_API_KEY='da2-2hwjj5un6rempchkqdmjci2vfe' GRAPHQL_ENDPOINT='https://ps4ky2nur5crxkjfkldkifixk4.appsync-api.us-east-1.amazonaws.com/graphql' next build",
     "start": "next start"
   },
   "dependencies": {
+    "axios": "^0.21.1",
+    "graphql": "^15.5.0",
+    "graphql-tag": "^2.11.0",
     "next": "10.0.8",
     "react": "17.0.1",
-    "react-dom": "17.0.1"
+    "react-dom": "17.0.1",
+    "react-grid-layout": "^1.2.2",
+    "react-icons": "^4.2.0"
   }
 }

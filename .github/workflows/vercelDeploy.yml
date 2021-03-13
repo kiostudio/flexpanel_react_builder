@@ -63,7 +63,7 @@ jobs:
         uses: amondnet/vercel-action@v20.0.0
         with:
           vercel-token: ${{ github.event.inputs.vercelToken }}
-          vercel-args: '--prod --confirm --build-env GRAPHQL_ENDPOINT=${{ secrets.GRAPHQL_ENDPOINT }}'
+          vercel-args: '--prod --confirm --build-env GRAPHQL_ENDPOINT=${{ secrets.GRAPHQL_ENDPOINT }} --build-env GRAPHQL_API_KEY=${{ secrets.GRAPHQL_API_KEY }}'
 
       # Webhook Status Update
       - name: Invoke Deployment Hook (Deploy Success)
