@@ -1,8 +1,8 @@
 import { useEffect , useState , useMemo , useRef } from 'react';
-import { Spinner } from "@blueprintjs/core";
-import { API , Storage } from 'aws-amplify';
+// import { Spinner } from "@blueprintjs/core";
+// import { API , Storage } from 'aws-amplify';
 
-function VideoWidget({props,userRole}){
+function VideoWidget({props}){
     const [videoSrc,setVideoSrc] = useState(null);
     const [control,setControl] = useState((props['control'] !== null && props['control'] === false) ? 0 : 1);
     const [mute,setMute] = useState((props['mute'] !== null && props['mute'] === true) ? 1 : 0);
@@ -33,7 +33,7 @@ function VideoWidget({props,userRole}){
                 height : (videoWrapperRef.current !== null) ? videoWrapperRef.current.offsetHeight * 1  : '100%',
                 width : (videoWrapperRef.current !== null) ? videoWrapperRef.current.offsetHeight * 1 / 9 * 16 : '100%',
                 objectFit : 'cover'
-              }} src={`https://www.youtube.com/embed/${videoSrc.replace('https://youtu.be','')}?controls=${(control) ? (control === true) ? 1 : 0 : 0}&autoplay=${(userRole === 'owner') ? 0 : autoPlay}&mute=${mute}&loop=${(userRole === 'owner') ? 0 : loop}&rel=0&playlist=${videoSrc.replace('https://youtu.be/','')}`} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe> 
+              }} src={`https://www.youtube.com/embed/${videoSrc.replace('https://youtu.be','')}?controls=${(control) ? (control === true) ? 1 : 0 : 0}&autoplay=${autoPlay}&mute=${mute}&loop=${loop}&rel=0&playlist=${videoSrc.replace('https://youtu.be/','')}`} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe> 
         ) : null;
     },[control,videoSrc,mute,loop,videoWrapperRef])
     return (
@@ -68,7 +68,7 @@ function VideoWidget({props,userRole}){
                   objectFit : 'cover'
                   // ...styles.mainContainer
                 }}
-                id="background-video" loop={(userRole === 'owner') ? 0 : loop} autoPlay={(userRole === 'owner') ? 0 : autoPlay} muted={mute} controls={control}>
+                id="background-video" loop={loop} autoPlay={autoPlay} muted={mute} controls={control}>
                 <source src={videoSrc} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>  

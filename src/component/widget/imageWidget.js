@@ -1,18 +1,18 @@
 import { useEffect , useState , useMemo } from 'react';
-import { Spinner } from "@blueprintjs/core";
-import { API , Storage } from 'aws-amplify';
+// import { Spinner } from "@blueprintjs/core";
+// import { API , Storage } from 'aws-amplify';
 
-const getImage = async(imageProps,setImageSrc)=>{
-    if(imageProps['key'] && !imageProps['key'].includes('https://')){
-        console.log('Image : ',imageProps['image']);
-        const url = await Storage.get(imageProps['key'] , { level: 'public' });
-        setImageSrc(url);
-    } else {
-        setImageSrc(imageProps);
-    }
-}
+// const getImage = async(imageProps,setImageSrc)=>{
+//     if(imageProps['key'] && !imageProps['key'].includes('https://')){
+//         console.log('Image : ',imageProps['image']);
+//         const url = await Storage.get(imageProps['key'] , { level: 'public' });
+//         setImageSrc(url);
+//     } else {
+//         setImageSrc(imageProps);
+//     }
+// }
 
-function ImageWidget({itemProps,itemActions,setTabId,displayTab,subDomainMode,router,panelName,rootRoute,setTitle}){
+function ImageWidget({itemProps,itemActions,router,item}){
     const [imageSrc,setImageSrc] = useState(null);
     // const [imageSrc,setImageSrc] = useState((itemProps && itemProps[imgState] && itemProps[imgState]['textContent']) ? itemProps[imgState]['textContent'] : null);
     const [imgState,setImgState] = useState((itemProps && itemProps['initiation'] && itemProps['initiation']['transitionDuration'] > 0) ? 'initiation' : 'default');
@@ -126,10 +126,11 @@ function ImageWidget({itemProps,itemActions,setTabId,displayTab,subDomainMode,ro
                 if(itemProps['default']['image']['key'].includes('https://')) {
                     setImageSrc(itemProps['default']['image'])
                 } else {
-                    getImage(itemProps['default']['image'],setImageSrc);
+                    // getImage(itemProps['default']['image'],setImageSrc);
+                    setImageSrc(`data:image/png;base64,${itemProps['default']['image']}`)
                 };
             } else {
-                setImageSrc(itemProps['default']['image'])
+                setImageSrc(`data:image/png;base64,${itemProps['default']['image']}`)
             }
         }
     },[JSON.stringify(itemProps)])
@@ -140,29 +141,29 @@ function ImageWidget({itemProps,itemActions,setTabId,displayTab,subDomainMode,ro
                 let newWindow = (itemActions['onMouseDown']['link']['newWindow'] && itemActions['onMouseDown']['link']['newWindow'] == true);
                 let urlTab;
                 if(itemActions['onMouseDown']['link']['source']){
-                    if(itemActions['onMouseDown']['link']['source']['url']){
-                        url = itemActions['onMouseDown']['link']['source']['url'];
-                    }
-                    if(itemActions['onMouseDown']['link']['source']['tabId']){
-                        const targetTab = displayTab.filter((tab)=>tab.id == itemActions['onMouseDown']['link']['source']['tabId']);
-                        if(targetTab.length == 1){
-                            const value = targetTab[0];
-                            urlTab = value;
-                            if(subDomainMode === true) {
-                                if(value.route !== null){
-                                    if(value.route === ""){
-                                        url = (rootRoute == "/") ?  '/': '/home';
-                                    } else {
-                                        url = '/'+value.route;
-                                    }
-                                } else {
-                                    url = '/'+value.id;
-                                }
-                            } else {
-                                url = '/panel'+'/'+value.panelID+'/'+value.id;
-                            }
-                        }
-                    }
+                    // if(itemActions['onMouseDown']['link']['source']['url']){
+                    //     url = itemActions['onMouseDown']['link']['source']['url'];
+                    // }
+                    // if(itemActions['onMouseDown']['link']['source']['tabId']){
+                    //     const targetTab = displayTab.filter((tab)=>tab.id == itemActions['onMouseDown']['link']['source']['tabId']);
+                    //     if(targetTab.length == 1){
+                    //         const value = targetTab[0];
+                    //         urlTab = value;
+                    //         if(subDomainMode === true) {
+                    //             if(value.route !== null){
+                    //                 if(value.route === ""){
+                    //                     url = (rootRoute == "/") ?  '/': '/home';
+                    //                 } else {
+                    //                     url = '/'+value.route;
+                    //                 }
+                    //             } else {
+                    //                 url = '/'+value.id;
+                    //             }
+                    //         } else {
+                    //             url = '/panel'+'/'+value.panelID+'/'+value.id;
+                    //         }
+                    //     }
+                    // }
                 }
                 setLinkAction({ url : url , newWindow : newWindow , urlTab : urlTab });
             }
@@ -203,23 +204,23 @@ function ImageWidget({itemProps,itemActions,setTabId,displayTab,subDomainMode,ro
                     onMouseLeave={()=>setImgState('default')}
                     onMouseDown={()=>setImgState('default')}
                     onClick={()=>{
-                        if(linkAction && (linkAction.url || linkAction.urlTab)){
-                            console.log('LinkAction',linkAction);
-                            if(linkAction.urlTab){
-                                console.log('Tab Change')
-                                if (linkAction.newWindow == true){
-                                    window.open(linkAction['url'])
-                                } else {
-                                    setTabId(linkAction.urlTab.id);
-                                    router.push(rootRoute, linkAction['url'] ,{ shallow : true });
-                                    setTitle(`${(linkAction.urlTab.name) ? linkAction.urlTab.name : 'Flexpanel'} | ${panelName}`)
-                                }
-                            } else {
-                                console.log('Url Change');
-                                if (linkAction.newWindow == true) window.open(linkAction['url']);
-                                if (linkAction.newWindow == false) window.location.href = linkAction['url'];
-                            }
-                        }
+                        // if(linkAction && (linkAction.url || linkAction.urlTab)){
+                        //     console.log('LinkAction',linkAction);
+                        //     if(linkAction.urlTab){
+                        //         console.log('Tab Change')
+                        //         if (linkAction.newWindow == true){
+                        //             window.open(linkAction['url'])
+                        //         } else {
+                        //             setTabId(linkAction.urlTab.id);
+                        //             router.push(rootRoute, linkAction['url'] ,{ shallow : true });
+                        //             setTitle(`${(linkAction.urlTab.name) ? linkAction.urlTab.name : 'Flexpanel'} | ${panelName}`)
+                        //         }
+                        //     } else {
+                        //         console.log('Url Change');
+                        //         if (linkAction.newWindow == true) window.open(linkAction['url']);
+                        //         if (linkAction.newWindow == false) window.location.href = linkAction['url'];
+                        //     }
+                        // }
                     }}
                 >
                     <a href={(linkAction && linkAction.url) ? linkAction.url : null}></a>

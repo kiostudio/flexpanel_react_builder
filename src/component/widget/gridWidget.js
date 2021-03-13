@@ -9,14 +9,14 @@ import { Responsive, WidthProvider } from 'react-grid-layout';
 // import CronJobBoard from '../widget/cronJob';
 import HeaderWidget from './headerWidget';
 import TextWidget from './textWidget';
-// import ImageWidget from './imageWidget';
-// import GoogleMapWidget from './googleMapWidget';
+import ImageWidget from './imageWidget';
+import GoogleMapWidget from './googleMapWidget';
 // import DragHandler from './tools/dragHandler';
 // import { API , Storage } from 'aws-amplify';
 // import { Icon, Button , Alert , Classes } from "@blueprintjs/core";
 // import { byComponentAndScreenSize } from '../../graphql/queries';
 // import { createGrid , createComponent , updateGrid , updatePanel , deleteGrid , createScreensize } from '../../graphql/mutations';
-// import VideoWidget from './videoWidget';
+import VideoWidget from './videoWidget';
 import ButtonWidget from './buttonWidget';
 import { basicWidgetsLayout } from './schema/widgetLayout';
 // const ResponsiveGridLayoutWidget = WidthProvider(Responsive);
@@ -76,31 +76,24 @@ const renderWidget = (item,router,currentBreakPoint,renderComponentState)=>{
             />
           )
       break;
-    // case "image":
-    //   return(
-    //     <ImageWidget 
-    //       setTitle={setTitle}
-    //       setTabId={setTabId}
-    //       displayTab={displayTab}
-    //       subDomainMode={subDomainMode}
-    //       router={router}
-    //       panelName={panelName}
-    //       rootRoute={rootRoute}
-    //       itemProps={(item.component.props) ? item.component.props : {}} 
-    //       itemActions={(item.component.actions) ? item.component.actions : {}} 
-    //       item={item} 
-    //       // props={(item.component.props && item.component.props[renderComponentState]) ? item.component.props[renderComponentState] : {}} 
-    //     />
-    //   )
-    // break;
-    // case "video":
-    //   return(
-    //     <VideoWidget 
-    //       props={(item.component.props && item.component.props[renderComponentState]) ? item.component.props[renderComponentState] : {}} 
-    //       userRole={userRole} 
-    //     />
-    //   )
-    // break;
+    case "image":
+      return(
+        <ImageWidget 
+          router={router}
+          itemProps={(item.component.props) ? item.component.props : {}} 
+          itemActions={(item.component.actions) ? item.component.actions : {}} 
+          item={item} 
+          // props={(item.component.props && item.component.props[renderComponentState]) ? item.component.props[renderComponentState] : {}} 
+        />
+      )
+    break;
+    case "video":
+      return(
+        <VideoWidget 
+          props={(item.component.props && item.component.props[renderComponentState]) ? item.component.props[renderComponentState] : {}}
+        />
+      )
+    break;
     case "button":
       return(
         <ButtonWidget 
@@ -111,16 +104,16 @@ const renderWidget = (item,router,currentBreakPoint,renderComponentState)=>{
           item={item} 
         />
       )
-    // break;
-    // case "googleMap":
-    //     return(
-    //       <GoogleMapWidget
-    //         itemProps={(item.component.props) ? item.component.props : {}} 
-    //         itemActions={(item.component.actions) ? item.component.actions : {}} 
-    //         item={item} 
-    //       />
-    //     )
-    // break;
+    break;
+    case "googleMap":
+        return(
+          <GoogleMapWidget
+            itemProps={(item.component.props) ? item.component.props : {}} 
+            itemActions={(item.component.actions) ? item.component.actions : {}} 
+            item={item} 
+          />
+        )
+    break;
     default:
         return(<div>{item.component.id}</div>)
       break;
@@ -215,62 +208,62 @@ function GridWidget({item,router}) {
         // getGridWidgetScreen(item.component.id,currentBreakPoint,setGrid,setLayouts,userRole,setScreenSizes)
       }
     },[currentBreakPoint])
-    // useEffect(()=>{
-    //   // console.log('Check Grid Props',item.component.props);
-    //   if(item.component.props && item.component.props[renderComponentState]){
-    //     // Configure Background Image
-    //     if(item.component.props[renderComponentState]['backgroundImage']){
-    //       if(item.component.props[renderComponentState]['backgroundImage']['key']){
-    //         console.log('New Context',item.component.props[renderComponentState]['backgroundImage']['key']);
-    //         if(item.component.props[renderComponentState]['backgroundImage']['key'].includes('https://')) {
-    //           setBackgroundImg(item.component.props[renderComponentState]['backgroundImage'])
-    //         } else {
-    //           getImage(item.component.props[renderComponentState]['backgroundImage'],setBackgroundImg);
-    //         };
-    //       } else {
-    //         setBackgroundImg(item.component.props[renderComponentState]['backgroundImage']);
-    //       }
-    //     } else {
-    //       setBackgroundImg(null);
-    //     }
-    //     // Configure BackgroundImafge Blur
-    //     if(item.component.props[renderComponentState]['backgroundImageBlur']){
-    //       setBackgroundImgBlur(item.component.props[renderComponentState]['backgroundImageBlur'])
-    //     } else {
-    //       setBackgroundImgBlur(null);
-    //     }
-    //     // Configure BackgroundImafge Opacity
-    //     if(item.component.props[renderComponentState]['backgroungImgOpacity']){
-    //       setBackgroundImgOpacity(item.component.props[renderComponentState]['backgroungImgOpacity'])
-    //     } else {
-    //       setBackgroundImgOpacity(1);
-    //     }
-    //     // Configure Background Video
-    //     if(item.component.props[renderComponentState]['backgroundVideo']){
-    //       setBackgroundVideo(item.component.props[renderComponentState]['backgroundVideo'])
-    //     } else {
-    //       setBackgroundVideo(null);
-    //     }
-    //     // Configure Background Pattern
-    //     if(item.component.props[renderComponentState]['backgroundPattern']){
-    //       setBackgroundPattern(item.component.props[renderComponentState]['backgroundPattern'])
-    //     } else {
-    //       setBackgroundPattern(null);
-    //     }
-    //     // Configure OverlayColor Color
-    //     if(item.component.props[renderComponentState]['overlayColor']){
-    //       setOverlayColor(item.component.props[renderComponentState]['overlayColor'])
-    //     } else {
-    //       setOverlayColor(null);
-    //     }
-    //     // Configure OverlayColor Gradient
-    //     if(item.component.props[renderComponentState]['overlayGradient']){
-    //       setOverlayGradient(item.component.props[renderComponentState]['overlayGradient'])
-    //     } else {
-    //       setOverlayGradient(null);
-    //     }
-    //   }
-    // })
+    useEffect(()=>{
+      // console.log('Check Grid Props',item.component.props);
+      if(item.component.props && item.component.props[renderComponentState]){
+        // Configure Background Image
+        if(item.component.props[renderComponentState]['backgroundImage']){
+          if(item.component.props[renderComponentState]['backgroundImage']['key']){
+            console.log('New Context',item.component.props[renderComponentState]['backgroundImage']['key']);
+            if(item.component.props[renderComponentState]['backgroundImage']['key'].includes('https://')) {
+              setBackgroundImg(item.component.props[renderComponentState]['backgroundImage'])
+            } else {
+              setBackgroundImg(`data:image/png;base64,${item.component.props[renderComponentState]['backgroundImage']['image']}`)
+            };
+          } else {
+            setBackgroundImg(item.component.props[renderComponentState]['backgroundImage']);
+          }
+        } else {
+          setBackgroundImg(null);
+        }
+        // Configure BackgroundImafge Blur
+        if(item.component.props[renderComponentState]['backgroundImageBlur']){
+          setBackgroundImgBlur(item.component.props[renderComponentState]['backgroundImageBlur'])
+        } else {
+          setBackgroundImgBlur(null);
+        }
+        // Configure BackgroundImafge Opacity
+        if(item.component.props[renderComponentState]['backgroungImgOpacity']){
+          setBackgroundImgOpacity(item.component.props[renderComponentState]['backgroungImgOpacity'])
+        } else {
+          setBackgroundImgOpacity(1);
+        }
+        // Configure Background Video
+        if(item.component.props[renderComponentState]['backgroundVideo']){
+          setBackgroundVideo(item.component.props[renderComponentState]['backgroundVideo'])
+        } else {
+          setBackgroundVideo(null);
+        }
+        // Configure Background Pattern
+        if(item.component.props[renderComponentState]['backgroundPattern']){
+          setBackgroundPattern(item.component.props[renderComponentState]['backgroundPattern'])
+        } else {
+          setBackgroundPattern(null);
+        }
+        // Configure OverlayColor Color
+        if(item.component.props[renderComponentState]['overlayColor']){
+          setOverlayColor(item.component.props[renderComponentState]['overlayColor'])
+        } else {
+          setOverlayColor(null);
+        }
+        // Configure OverlayColor Gradient
+        if(item.component.props[renderComponentState]['overlayGradient']){
+          setOverlayGradient(item.component.props[renderComponentState]['overlayGradient'])
+        } else {
+          setOverlayGradient(null);
+        }
+      }
+    },[])
     const children = useMemo(() => {
       // grid,setDragEnable,userRole,deviceAgent,userID,selectedGrid,currentBreakPoint
       if(currentBreakPoint != null && layouts != null){

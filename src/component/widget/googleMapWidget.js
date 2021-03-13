@@ -1,6 +1,6 @@
 import { useEffect , useState , useMemo , useRef } from 'react';
-import { Spinner } from "@blueprintjs/core";
-import { API , Storage } from 'aws-amplify';
+// import { Spinner } from "@blueprintjs/core";
+// import { API , Storage } from 'aws-amplify';
 
 function GoogleMapWidget({itemProps,userRole}){
     const [mapSrc,setMapSrc] = useState(null);
