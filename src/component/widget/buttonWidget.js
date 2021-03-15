@@ -1,21 +1,21 @@
 import { useEffect , useState , useMemo } from 'react';
 
-function ButtonWidget({itemProps,itemActions,item,setTabId,displayTab,subDomainMode,router,panelName,rootRoute,setTitle}){
+function ButtonWidget({itemProps,itemActions,item,setTabId,displayTab,subDomainMode,router,panelName,rootRoute,setTitle,tabList}){
     const [buttonTxt,setButtonTxt] = useState((itemProps && itemProps[buttonState] && itemProps[buttonState]['textContent']) ? itemProps[buttonState]['textContent'] : 'Button');
     const [buttonState,setButtonState] = useState('default');
     const [props,setSelectProps] = useState((itemProps && itemProps[buttonState]) ? itemProps[buttonState] : {});
     const [buttonStyle,setButtonStyle] = useState({
-        backgroundColor : (itemProps['default'] && itemProps['default']['buttonColor']) ? `rgba(${itemProps['default']['buttonColor'].r},${itemProps['default'] ['buttonColor'].g},${itemProps['default'] ['buttonColor'].b},${itemProps['default'] ['buttonColor'].a})` : 'none',
+        backgroundColor : (itemProps['default'] && itemProps['default']['buttonColor']) ? `rgba(${itemProps['default']['buttonColor'].r},${itemProps['default'] ['buttonColor'].g},${itemProps['default'] ['buttonColor'].b},${itemProps['default'] ['buttonColor'].a})` : '#e7e7e7',
         color : (itemProps['default']  && itemProps['default']['fontColor']) ? `rgba(${itemProps['default'] ['fontColor'].r},${itemProps['default'] ['fontColor'].g},${itemProps['default'] ['fontColor'].b},${itemProps['default'] ['fontColor'].a})` : '#000000',
         fontFamily : (itemProps['default']  && itemProps['default']['fontFamily']) ? itemProps['default'] ['fontFamily'] : 'Arial',
         fontSize : (itemProps['default']  && itemProps['default'] ['fontSize']) ? itemProps['default'] ['fontSize'] : 14,
         fontWeight : (itemProps['default']  && itemProps['default']['fontWeight']) ? itemProps['default'] ['fontWeight'] : 100,
         fontStyle : (itemProps['default']  && itemProps['default']['fontStyle']) ? itemProps['default'] ['fontStyle'] : 'normal',
         textDecoration : (itemProps['default'] && itemProps['default']['textDecoration']) ? itemProps['default'] ['textDecoration'] : 'none',
-        borderTopLeftRadius : ( itemProps['default']  && itemProps['default']['borderTopLeftRadius']) ? `${itemProps['default']['borderTopLeftRadius']}px` : 'none',
-        borderTopRightRadius : ( itemProps['default']  && itemProps['default']['borderTopRightRadius']) ? `${itemProps['default']['borderTopRightRadius']}px` : 'none',
-        borderBottomLeftRadius : ( itemProps['default']  && itemProps['default']['borderBottomLeftRadius']) ? `${itemProps['default']['borderBottomLeftRadius']}px` : 'none',
-        borderBottomRightRadius : (itemProps['default']  && itemProps['default']['borderBottomRightRadius']) ? `${itemProps['default']['borderBottomRightRadius']}px` : 'none',
+        borderTopLeftRadius : ( itemProps['default']  && itemProps['default']['borderTopLeftRadius']) ? `${itemProps['default']['borderTopLeftRadius']}px` : '5px',
+        borderTopRightRadius : ( itemProps['default']  && itemProps['default']['borderTopRightRadius']) ? `${itemProps['default']['borderTopRightRadius']}px` : '5px',
+        borderBottomLeftRadius : ( itemProps['default']  && itemProps['default']['borderBottomLeftRadius']) ? `${itemProps['default']['borderBottomLeftRadius']}px` : '5px',
+        borderBottomRightRadius : (itemProps['default']  && itemProps['default']['borderBottomRightRadius']) ? `${itemProps['default']['borderBottomRightRadius']}px` : '5px',
         paddingTop : ( itemProps['default']  &&  itemProps['default']['paddingTop']) ?  itemProps['default'] ['paddingTop'] : 'none',
         paddingBottom : ( itemProps['default']  &&  itemProps['default']['paddingBottom']) ?  itemProps['default'] ['paddingBottom'] : 'none',
         paddingLeft: ( itemProps['default']  &&  itemProps['default']['paddingLeft']) ?  itemProps['default'] ['paddingLeft'] : 'none',
@@ -40,7 +40,7 @@ function ButtonWidget({itemProps,itemActions,item,setTabId,displayTab,subDomainM
         let buttonStyle = {
             transitionDuration : (init === true) ? (itemProps[buttonState] && itemProps[buttonState]['transitionDuration']) ? `${itemProps[buttonState]['transitionDuration']}s` : '0s' : `${(itemProps && itemProps['initiation'] && itemProps['initiation']['transitionDuration']) ? itemProps['initiation']['transitionDuration']+'s' : '0.5s'}`,
             transitionTimingFunction : ' ease-in-out',
-            backgroundColor : (props && props['buttonColor']) ? `rgba(${props['buttonColor'].r},${props['buttonColor'].g},${props['buttonColor'].b},${props['buttonColor'].a})` : 'none',
+            backgroundColor : (props && props['buttonColor']) ? `rgba(${props['buttonColor'].r},${props['buttonColor'].g},${props['buttonColor'].b},${props['buttonColor'].a})` : (itemProps['default']  && itemProps['default']['fontColor']) ? `rgba(${itemProps['default'] ['fontColor'].r},${itemProps['default'] ['fontColor'].g},${itemProps['default'] ['fontColor'].b},${itemProps['default'] ['fontColor'].a})` : 'rgb(239, 239, 239)',
             color : (props && props['fontColor']) ? `rgba(${props['fontColor'].r},${props['fontColor'].g},${props['fontColor'].b},${props['fontColor'].a})` : '#000000',
             fontFamily : (props && props['fontFamily']) ? props['fontFamily'] : 'Arial',
             fontSize : (props && props['fontSize']) ? props['fontSize'] : 14,
@@ -64,7 +64,7 @@ function ButtonWidget({itemProps,itemActions,item,setTabId,displayTab,subDomainM
             // if(item.component  props['shadowColor']) headerStyle.textShadow = `${item.component  props['shadowOffsetX'] ? item.component  props['shadowOffsetX'] : 0}px ${item.component  props['shadowOffsetY'] ? item.component  props['shadowOffsetY'] : 0}px ${item.component  props['shadowBlur'] ? item.component  props['shadowBlur'] : 0}px rgba(${item.component  props['shadowColor'].r},${item.component  props['shadowColor'].g},${item.component  props['shadowColor'].b},${item.component.props['shadowColor'].a})`;
         };
         if( props &&  props['borderWidth'] &&  props['borderWidth'] > 0) buttonStyle.border = `${ props['borderWidth']}px ${( props['borderType'])?  props['borderType'] : 'solid'} rgba(${(! props['borderColor']) ? 0 : props['borderColor'].r},${(! props['borderColor']) ? 0 : props['borderColor'].g},${(! props['borderColor']) ? 0 : props['borderColor'].b},${(! props['borderColor']) ? 1 :  props['borderColor'].a}`;
-        if(buttonState != 'default'){
+        if(buttonState !== 'default'){
             // console.log(buttonState);
             buttonStyle = {
                 ...buttonStyle,
@@ -95,24 +95,23 @@ function ButtonWidget({itemProps,itemActions,item,setTabId,displayTab,subDomainM
                         url = itemActions['onMouseDown']['link']['source']['url'];
                     }
                     if(itemActions['onMouseDown']['link']['source']['tabId']){
-                        // const targetTab = displayTab.filter((tab)=>tab.id == itemActions['onMouseDown']['link']['source']['tabId']);
-                        // if(targetTab.length == 1){
-                        //     const value = targetTab[0];
-                        //     urlTab = value;
-                        //     if(subDomainMode === true) {
-                        //         if(value.route !== null){
-                        //             if(value.route === ""){
-                        //                 url = (rootRoute == "/") ?  '/': '/home';
-                        //             } else {
-                        //                 url = '/'+value.route;
-                        //             }
-                        //         } else {
-                        //             url = '/'+value.id;
-                        //         }
-                        //     } else {
-                        //         url = '/panel'+'/'+value.panelID+'/'+value.id;
-                        //     }
-                        // }
+                        console.log('Url Action',itemActions['onMouseDown']['link']['source']['tabId']);
+                        url = itemActions['onMouseDown']['link']['source']['tabId'];
+                        const targetTab = tabList.filter((tab)=>tab.id == itemActions['onMouseDown']['link']['source']['tabId']);
+                        if(targetTab.length == 1){
+                            const value = targetTab[0];
+                            urlTab = value;
+                            if(value.route !== null){
+                                if(value.route === ""){
+                                    url = (rootRoute == "/") ?  '/': '/home';
+                                } else {
+                                    url = '/'+value.route;
+                                }
+                            } else {
+                                url = '/'+value.id;
+                            }
+
+                        }
                     }
                 }
                 setLinkAction({ url : url , newWindow : newWindow , urlTab : urlTab });
@@ -135,9 +134,16 @@ function ButtonWidget({itemProps,itemActions,item,setTabId,displayTab,subDomainM
                 onMouseDown={()=>setButtonState('click')}
                 onMouseUp={()=>setButtonState('default')}
                 onClick={()=>{
-                    // if(linkAction && (linkAction.url || linkAction.urlTab)){
+                    if(linkAction && linkAction.url){
+                        console.log(linkAction.newWindow,linkAction['url']);
+                        if (linkAction.newWindow == true) {
+                            window.open(linkAction['url']);
+                        } else{
+                            router.push(linkAction['url']);
+                        }
+                        // if (linkAction.newWindow == false) router.push(linkAction['url']);
                     //     console.log('LinkAction',linkAction);
-                    //     if(linkAction.urlTab){
+                        // if(linkAction.urlTab){
                     //         console.log('Tab Change')
                     //         if (linkAction.newWindow == true){
                     //             window.open(linkAction['url'])
@@ -146,12 +152,12 @@ function ButtonWidget({itemProps,itemActions,item,setTabId,displayTab,subDomainM
                     //             router.push(rootRoute, linkAction['url'] ,{ shallow : true });
                     //             setTitle(`${(linkAction.urlTab.name) ? linkAction.urlTab.name : 'Flexpanel'} | ${panelName}`)
                     //         }
-                    //     } else {
+                        // } else {
                     //         console.log('Url Change');
                     //         if (linkAction.newWindow == true) window.open(linkAction['url']);
                     //         if (linkAction.newWindow == false) window.location.href = linkAction['url'];
-                    //     }
-                    // }
+                        // }
+                    }
                 }}
                 style={buttonStyle}
             >

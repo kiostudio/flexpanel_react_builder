@@ -12,7 +12,7 @@ import { useEffect , useState , useMemo } from 'react';
 //     }
 // }
 
-function ImageWidget({itemProps,itemActions,router,item}){
+function ImageWidget({itemProps,itemActions,router,tabList}){
     const [imageSrc,setImageSrc] = useState(null);
     // const [imageSrc,setImageSrc] = useState((itemProps && itemProps[imgState] && itemProps[imgState]['textContent']) ? itemProps[imgState]['textContent'] : null);
     const [imgState,setImgState] = useState((itemProps && itemProps['initiation'] && itemProps['initiation']['transitionDuration'] > 0) ? 'initiation' : 'default');
@@ -121,14 +121,8 @@ function ImageWidget({itemProps,itemActions,router,item}){
         // console.log('Image Props',props['image']);
         // if(props && props['image']) getImage(props['image'],setImageSrc);
         if(itemProps['default'] && itemProps['default']['image']){
-            if(itemProps['default']['image']['key']){
-                console.log('New Context',itemProps['default']['image']['key']);
-                if(itemProps['default']['image']['key'].includes('https://')) {
-                    setImageSrc(itemProps['default']['image'])
-                } else {
-                    // getImage(itemProps['default']['image'],setImageSrc);
-                    setImageSrc(`data:image/png;base64,${itemProps['default']['image']}`)
-                };
+            if(itemProps['default']['image'].includes('https://')) {
+                setImageSrc(itemProps['default']['image'])
             } else {
                 setImageSrc(`data:image/png;base64,${itemProps['default']['image']}`)
             }
@@ -141,29 +135,28 @@ function ImageWidget({itemProps,itemActions,router,item}){
                 let newWindow = (itemActions['onMouseDown']['link']['newWindow'] && itemActions['onMouseDown']['link']['newWindow'] == true);
                 let urlTab;
                 if(itemActions['onMouseDown']['link']['source']){
-                    // if(itemActions['onMouseDown']['link']['source']['url']){
-                    //     url = itemActions['onMouseDown']['link']['source']['url'];
-                    // }
-                    // if(itemActions['onMouseDown']['link']['source']['tabId']){
-                    //     const targetTab = displayTab.filter((tab)=>tab.id == itemActions['onMouseDown']['link']['source']['tabId']);
-                    //     if(targetTab.length == 1){
-                    //         const value = targetTab[0];
-                    //         urlTab = value;
-                    //         if(subDomainMode === true) {
-                    //             if(value.route !== null){
-                    //                 if(value.route === ""){
-                    //                     url = (rootRoute == "/") ?  '/': '/home';
-                    //                 } else {
-                    //                     url = '/'+value.route;
-                    //                 }
-                    //             } else {
-                    //                 url = '/'+value.id;
-                    //             }
-                    //         } else {
-                    //             url = '/panel'+'/'+value.panelID+'/'+value.id;
-                    //         }
-                    //     }
-                    // }
+                    if(itemActions['onMouseDown']['link']['source']['url']){
+                        url = itemActions['onMouseDown']['link']['source']['url'];
+                    }
+                    if(itemActions['onMouseDown']['link']['source']['tabId']){
+                        console.log('Url Action',itemActions['onMouseDown']['link']['source']['tabId']);
+                        url = itemActions['onMouseDown']['link']['source']['tabId'];
+                        const targetTab = tabList.filter((tab)=>tab.id == itemActions['onMouseDown']['link']['source']['tabId']);
+                        if(targetTab.length == 1){
+                            const value = targetTab[0];
+                            urlTab = value;
+                            if(value.route !== null){
+                                if(value.route === ""){
+                                    url = (rootRoute == "/") ?  '/': '/home';
+                                } else {
+                                    url = '/'+value.route;
+                                }
+                            } else {
+                                url = '/'+value.id;
+                            }
+
+                        }
+                    }
                 }
                 setLinkAction({ url : url , newWindow : newWindow , urlTab : urlTab });
             }
@@ -204,7 +197,12 @@ function ImageWidget({itemProps,itemActions,router,item}){
                     onMouseLeave={()=>setImgState('default')}
                     onMouseDown={()=>setImgState('default')}
                     onClick={()=>{
-                        // if(linkAction && (linkAction.url || linkAction.urlTab)){
+                        if(linkAction && (linkAction.url || linkAction.urlTab)){
+                            if (linkAction.newWindow == true) {
+                                window.open(linkAction['url']);
+                            } else{
+                                router.push(linkAction['url']);
+                            }
                         //     console.log('LinkAction',linkAction);
                         //     if(linkAction.urlTab){
                         //         console.log('Tab Change')
@@ -220,7 +218,7 @@ function ImageWidget({itemProps,itemActions,router,item}){
                         //         if (linkAction.newWindow == true) window.open(linkAction['url']);
                         //         if (linkAction.newWindow == false) window.location.href = linkAction['url'];
                         //     }
-                        // }
+                        }
                     }}
                 >
                     <a href={(linkAction && linkAction.url) ? linkAction.url : null}></a>

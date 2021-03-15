@@ -23,7 +23,7 @@ import { basicWidgetsLayout } from './schema/widgetLayout';
 
 const layoutBreakPoints = {lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0};
 
-const renderWidget = (item,router,currentBreakPoint,renderComponentState)=>{
+const renderWidget = (item,router,currentBreakPoint,renderComponentState,tabList)=>{
   switch (item.component.type) {
     // case "dateTimeWidget":
     //   return (
@@ -83,6 +83,7 @@ const renderWidget = (item,router,currentBreakPoint,renderComponentState)=>{
           itemProps={(item.component.props) ? item.component.props : {}} 
           itemActions={(item.component.actions) ? item.component.actions : {}} 
           item={item} 
+          tabList={tabList}
           // props={(item.component.props && item.component.props[renderComponentState]) ? item.component.props[renderComponentState] : {}} 
         />
       )
@@ -101,7 +102,8 @@ const renderWidget = (item,router,currentBreakPoint,renderComponentState)=>{
           router={router}
           itemProps={(item.component.props) ? item.component.props : {}} 
           itemActions={(item.component.actions) ? item.component.actions : {}} 
-          item={item} 
+          item={item}
+          tabList={tabList}
         />
       )
     break;
@@ -130,7 +132,7 @@ const renderWidget = (item,router,currentBreakPoint,renderComponentState)=>{
 //   }
 // }
 
-function GridWidget({item,router}) {
+function GridWidget({item,router,width,tabList}) {
     // const [grid,setGrid] = useState(null);
     const [layouts,setLayouts] = useState(null);
     const [currentBreakPoint,setCurrentBreakPoint] = useState(null);
@@ -148,35 +150,35 @@ function GridWidget({item,router}) {
     const [overlayGradient,setOverlayGradient] = useState(null);
     const [renderComponentState,setRenderComponentState] = useState('default');
     // const [cloneChildrenCommand,setCloneChildrenCommand] = useState((item.cloneChildren && item.cloneChildren.status === true) ? item.cloneChildren : false);
-    const [widgetLayout] = useState(JSON.parse(JSON.stringify(basicWidgetsLayout)));
+    // const [widgetLayout] = useState(JSON.parse(JSON.stringify(basicWidgetsLayout)));
     const ref = useRef(null);
     const videoWrapperRef = useRef(null);
+    // useEffect(()=>{
+    //   if(gridWidth !== null){
+    //     // console.log('This Grid',item,selectedGrid);
+    //     const sortedBreakpoints = Object.keys(layoutBreakPoints).sort(
+    //       (breakpoint1, breakpoint2) =>
+    //       layoutBreakPoints[breakpoint1] - layoutBreakPoints[breakpoint2]
+    //     );
+    //     let breakpoint = sortedBreakpoints[0];
+    //     for (let i = 0; i < sortedBreakpoints.length; i++) {
+    //         const currentBreakpoint = sortedBreakpoints[i];
+    //         const nextBreakpoint = sortedBreakpoints[i + 1];
+    //         if (
+    //             typeof nextBreakpoint === "undefined" ||
+    //             (layoutBreakPoints[currentBreakpoint] <= gridWidth &&
+    //               gridWidth <= layoutBreakPoints[nextBreakpoint])
+    //         ) {
+    //             breakpoint = currentBreakpoint;
+    //             break;
+    //         }
+    //     }
+    //     // console.log('Update BreakPoint',breakpoint);
+    //     setCurrentBreakPoint(breakpoint);
+    //   }
+    // },[gridWidth])
     useEffect(()=>{
-      if(gridWidth !== null){
-        // console.log('This Grid',item,selectedGrid);
-        const sortedBreakpoints = Object.keys(layoutBreakPoints).sort(
-          (breakpoint1, breakpoint2) =>
-          layoutBreakPoints[breakpoint1] - layoutBreakPoints[breakpoint2]
-        );
-        let breakpoint = sortedBreakpoints[0];
-        for (let i = 0; i < sortedBreakpoints.length; i++) {
-            const currentBreakpoint = sortedBreakpoints[i];
-            const nextBreakpoint = sortedBreakpoints[i + 1];
-            if (
-                typeof nextBreakpoint === "undefined" ||
-                (layoutBreakPoints[currentBreakpoint] <= gridWidth &&
-                  gridWidth <= layoutBreakPoints[nextBreakpoint])
-            ) {
-                breakpoint = currentBreakpoint;
-                break;
-            }
-        }
-        // console.log('Update BreakPoint',breakpoint);
-        setCurrentBreakPoint(breakpoint);
-      }
-    },[gridWidth])
-    useEffect(()=>{
-      if(currentBreakPoint !== null) {
+      // if(currentBreakPoint !== null) {
         console.log('Grid Widget',item);
         let pageLayout = {
           lg : [],
@@ -188,9 +190,9 @@ function GridWidget({item,router}) {
         item.component.grids.items.map((screen)=>{
           // screens.map((screen)=>{
             screen.grids.map((gridItem)=>{
-              gridItem['i'] = gridItem.id;
-              if(gridItem.component.props) gridItem.component.props = JSON.parse(gridItem.component.props);
-              if(gridItem.component.actions) gridItem.component.actions = JSON.parse(gridItem.component.actions);
+              gridItem['i'] = gridItem.component.id;
+              if(gridItem.component.props && typeof gridItem.component.props === 'string') gridItem.component.props = JSON.parse(gridItem.component.props);
+              if(gridItem.component.actions && typeof gridItem.component.actions === 'string') gridItem.component.actions = JSON.parse(gridItem.component.actions);
             })
             pageLayout[screen.breakPoint] = screen.grids; 
           // });
@@ -206,8 +208,8 @@ function GridWidget({item,router}) {
         // setGrid(loadingLayout[currentBreakPoint]);
         // setLayouts(loadingLayout);
         // getGridWidgetScreen(item.component.id,currentBreakPoint,setGrid,setLayouts,userRole,setScreenSizes)
-      }
-    },[currentBreakPoint])
+      // }
+    },[])
     useEffect(()=>{
       // console.log('Check Grid Props',item.component.props);
       if(item.component.props && item.component.props[renderComponentState]){
@@ -266,10 +268,10 @@ function GridWidget({item,router}) {
     },[])
     const children = useMemo(() => {
       // grid,setDragEnable,userRole,deviceAgent,userID,selectedGrid,currentBreakPoint
-      if(currentBreakPoint != null && layouts != null){
+      if(layouts != null){
         // const grid = layouts[currentBreakPoint];
         // console.log('Grid',grid);
-        return layouts[currentBreakPoint].map((item)=>{
+        return layouts['lg'].map((item)=>{
           return (item.i == 'loading') ? 
             <div key={'loading'} className={Classes.SKELETON} style={styles.skeletonContainer}></div> : 
             <div 
@@ -278,11 +280,11 @@ function GridWidget({item,router}) {
                 ...styles.gridItem,
                 border : "none",
             }}>
-                {renderWidget(item,router,currentBreakPoint,renderComponentState)}
+                {renderWidget(item,router,currentBreakPoint,renderComponentState,tabList)}
             </div>
         })
       }
-    },[layouts,currentBreakPoint])
+    },[layouts])
     useEffect(()=>{
       if(ref.current !== null){
         // console.log('Set Grid Width',ref.current)
@@ -291,6 +293,15 @@ function GridWidget({item,router}) {
         // console.log(ref.current.offsetWidth);
       }
     })
+    useEffect(()=>{
+      // console.log('Window  width', window.innerWidth);
+      setGridWidth(window.innerWidth)
+      window.addEventListener('resize', ()=>{
+        // console.log('Resize',window.innerWidth);
+        setGridWidth(window.innerWidth)
+      });
+      // return () => window.removeEventListener('resize');
+    },[])
     const renderBackgroundImage = useMemo(()=>{
       return (backgroundImg) ?<div
         style={{
@@ -407,9 +418,10 @@ function GridWidget({item,router}) {
             {(ref.current) ? renderBackgroundVideo : null}
             {renderOverlayGradient}
             {renderOverlayColor}
-            {(layouts !== null && currentBreakPoint !== null) ? (
+            {(layouts !== null && gridWidth !== null) ? (
               <Responsive 
-                width={gridWidth} 
+                width={(gridWidth > width) ? width : gridWidth}
+                useCSSTransforms={false}
                 className={item.component.id} 
                 isDraggable={false}
                 isResizable={false}
@@ -419,7 +431,7 @@ function GridWidget({item,router}) {
                 margin={[0,0]}
                 rowHeight={10}
                 style={{
-                    ...styles.mainGridContainer
+                    // ...styles.mainGridContainer
                     // height : (deviceAgent.platform.type == "desktop") ?(deviceAgent.os.name == "Windows") ? '78vh' : '100%' : '100%'
                 }}
                 breakpoints={{lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0}}

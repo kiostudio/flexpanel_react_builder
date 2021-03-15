@@ -12,7 +12,7 @@ import GridWidget from '../widget/gridWidget';
 // import { byTabAndScreenSize } from '../../graphql/queries';
 // import { createGrid , createComponent , updateGrid , updatePanel , deleteGrid , createScreensize } from '../../graphql/mutations';
 // import { ImTablet , ImLaptop , ImMobile2 } from 'react-icons/im';
-import { basicWidgetsLayout } from '../widget/schema/widgetLayout';
+// import { basicWidgetsLayout } from '../widget/schema/widgetLayout';
 // import html2canvas from 'html2canvas';
 // import Compressor from 'compressorjs';
 // const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -21,7 +21,7 @@ const layoutBreakPoints = {lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0};
 
 // Have to generate Grid first, then generate layout
 
-const renderWidget = (item,router)=>{
+const renderWidget = (item,router,width,tabList)=>{
   switch (item.component.type) {
     // case "dateTimeWidget":
     //   return (
@@ -51,6 +51,8 @@ const renderWidget = (item,router)=>{
             <GridWidget 
               item={item}
               router={router}
+              width={width}
+              tabList={tabList}
             />
           )
       break;
@@ -59,7 +61,7 @@ const renderWidget = (item,router)=>{
   }
 }
 
-function Grid({ page, title, router, pageId }) {
+function Grid({ page, title, router, pageId , tabList }) {
   // const [trend, setTrend] = useState([]);
   // const [twitterTrends,setTwitterTrend] = useState([]);
   // const [keyword, setKeyword] = useState(null);
@@ -85,30 +87,30 @@ function Grid({ page, title, router, pageId }) {
   //   }
   // }, []);
 
+  // useEffect(()=>{
+  //   // setGrid([{i: 'loading' }]);
+  //   const sortedBreakpoints = Object.keys(layoutBreakPoints).sort(
+  //     (breakpoint1, breakpoint2) =>
+  //     layoutBreakPoints[breakpoint1] - layoutBreakPoints[breakpoint2]
+  //   );
+  //   let breakpoint = sortedBreakpoints[0];
+  //   for (let i = 0; i < sortedBreakpoints.length; i++) {
+  //       const currentBreakpoint = sortedBreakpoints[i];
+  //       const nextBreakpoint = sortedBreakpoints[i + 1];
+  //       if (
+  //           typeof nextBreakpoint === "undefined" ||
+  //           (layoutBreakPoints[currentBreakpoint] <= window.innerWidth &&
+  //             window.innerWidth <= layoutBreakPoints[nextBreakpoint])
+  //       ) {
+  //           breakpoint = currentBreakpoint;
+  //           break;
+  //       }
+  //   }
+  //   console.log('init width',window.innerWidth,sortedBreakpoints,breakpoint);
+  //   setCurrentBreakPoint(breakpoint);
+  // },[]);
   useEffect(()=>{
-    // setGrid([{i: 'loading' }]);
-    const sortedBreakpoints = Object.keys(layoutBreakPoints).sort(
-      (breakpoint1, breakpoint2) =>
-      layoutBreakPoints[breakpoint1] - layoutBreakPoints[breakpoint2]
-    );
-    let breakpoint = sortedBreakpoints[0];
-    for (let i = 0; i < sortedBreakpoints.length; i++) {
-        const currentBreakpoint = sortedBreakpoints[i];
-        const nextBreakpoint = sortedBreakpoints[i + 1];
-        if (
-            typeof nextBreakpoint === "undefined" ||
-            (layoutBreakPoints[currentBreakpoint] <= window.innerWidth &&
-              window.innerWidth <= layoutBreakPoints[nextBreakpoint])
-        ) {
-            breakpoint = currentBreakpoint;
-            break;
-        }
-    }
-    console.log('init width',window.innerWidth,sortedBreakpoints,breakpoint);
-    setCurrentBreakPoint(breakpoint);
-  },[]);
-  useEffect(()=>{
-    if(currentBreakPoint != null){
+    // if(currentBreakPoint != null){
       let pageLayout = {
         lg : [],
         md : [],
@@ -119,9 +121,9 @@ function Grid({ page, title, router, pageId }) {
       
       page.screens.items.map((screen)=>{
         screen.grids.items.map(async(gridItem)=>{
-          gridItem['i'] = gridItem.id;
-          if(gridItem.component.props) gridItem.component.props = JSON.parse(gridItem.component.props);
-          if(gridItem.component.actions) gridItem.component.actions = JSON.parse(gridItem.component.actions);
+          gridItem['i'] = gridItem.component.id;
+          if(gridItem.component.props && typeof gridItem.component.props === 'string') gridItem.component.props = JSON.parse(gridItem.component.props);
+          if(gridItem.component.actions && typeof gridItem.component.actions === 'string') gridItem.component.actions = JSON.parse(gridItem.component.actions);
         });
         pageLayout[screen.breakPoint] = screen.grids.items
       })
@@ -168,8 +170,8 @@ function Grid({ page, title, router, pageId }) {
       //   return displayLayout;
       // });
 
-    }
-  },[currentBreakPoint])
+    // }
+  },[])
 
   // useEffect(()=>{
   //   console.log('Load Tab Grid',currentBreakPoint,tabId,window.innerWidth);
@@ -183,27 +185,26 @@ function Grid({ page, title, router, pageId }) {
     // console.log('Layout',layouts[currentBreakPoint]);
     // if(currentBreakPoint !== null && layouts[currentBreakPoint] != null) setGrid(layouts[currentBreakPoint])
   // },[layouts,currentBreakPoint])
+  const [width,setWidth] = useState((page['maxWidth']) ?  page['maxWidth'] : 1440);
+  const [windowWith,setWindowWidth] = useState(null);
   const children = useMemo(() => {
-    if(currentBreakPoint != null && layouts != null){
+    if(layouts != null){
       // console.log('Layouts',layouts,currentBreakPoint);
-      return layouts[currentBreakPoint].map((item,index)=>{
+      return layouts['lg'].map((item,index)=>{
         return (item.i == 'loading') ? 
           <div key={item.i} className={Classes.SKELETON} style={styles.skeletonContainer}></div> : 
           <div
-            key={item['id']} 
+            key={item['i']} 
             style={{
               ...styles.gridItem,
               backgroundColor : (item.component.type !== 'grid') ? '#282c34' : 'transparent'
             }}>
-            {renderWidget(item,router)}
+            {renderWidget(item,router,width,tabList)}
             {/* {(index == layouts[currentBreakPoint].length - 1) ? <div ref={ref} style={{ position : 'absolute' , bottom : 0 }}></div> : null} */}
           </div>
       })
     }
-  }, [layouts,currentBreakPoint]);
-
-  const [width,setWidth] = useState((page['maxWidth']) ?  page['maxWidth'] : 1440);
-  const [windowWith,setWindowWidth] = useState(null);
+  }, [layouts]);
   // useEffect(()=>{
   //   setWidth((displayTab && tabId && displayTab.filter((tab)=>tab.id == tabId).length === 1 && displayTab.filter((tab)=>tab.id == tabId)[0]['maxWidth']) ?  displayTab.filter((tab)=>tab.id == tabId)[0]['maxWidth'] : 1440);
   // },[displayTab])
@@ -219,75 +220,76 @@ function Grid({ page, title, router, pageId }) {
   // useEffect(()=>{
   //   setSelectedGrid(null);
   // },[width,tabId])
-  return (layouts && windowWith) ? (
-    <div
-      style={{
-        width : '100%',
-        height : '100%',
-        display : 'flex',
-        flexDirection : 'column',
-        alignItems  :'center'
-      }}
-    >
-      <div 
+  return (layouts) ? (
+      <div
         style={{
-          ...styles.mainContainer,
-          width : '100%',
+          // ...styles.mainContainer,
+          // width : '100%',
           // width : (displayTab && tabId && displayTab.filter((tab)=>tab.id == tabId).length === 1 && displayTab.filter((tab)=>tab.id == tabId)[0]['maxWidth']) ?  `${displayTab.filter((tab)=>tab.id == tabId)[0]['maxWidth']}px` : '1440px',
-          maxWidth : width,
-          overflowY : 'hidden',
-          overflowX : 'hidden',
-          // backgroundColor : 'red'
-          // maxWidth : (displayTab && tabId && displayTab.filter((tab)=>tab.id == tabId).length === 1 && displayTab.filter((tab)=>tab.id == tabId)[0]['maxWidth']) ?  `${displayTab.filter((tab)=>tab.id == tabId)[0]['maxWidth']}px` : '1440px',
-          // maxWidth : (userRole === 'owner') ? '1300px' : '100%'
-          // width : (userRole === 'owner') ? '1250px' : '100%'
+          // maxWidth : width
         }}
       >
-        <Responsive 
-          width={windowWith}
+
+      <Responsive 
+          width={(windowWith > width) ? width : windowWith}
           className="layout" 
           isDraggable={false}
           isDroppable={false}
           isResizable={false}
-          // compactType={['vertical','horizontal']}
+          // compactType={null}
+          // useCSSTransforms={false}
           margin={[0,0]}
           rowHeight={10}
           style={{
-            ...styles.mainGridContainer,
-            // height : (deviceAgent.platform.type == "desktop") ?(deviceAgent.os.name == "Windows") ? '78vh' : '100%' : '100%',
-            height : '100%',
-            backgroundColor : (page['backgroundColor']) ? `rgba(${page['backgroundColor'].r},${page['backgroundColor'].g},${page['backgroundColor'].b},${page['backgroundColor'].a})`  : '#E4E4E4',
-            border: 'none'
+            width : '100%',
+            display : 'flex',
+            flexDirection : 'column',
+            justifyContent : 'flex-start',
+            alignItems : 'center'
+            // margin : 'auto' 
+            // height : '100%',
+            // maxWidth : width
+            // height : '50px',
+            // maxHeight : '100px',
+            // overflow : 'hidden'
+          //   ...styles.mainGridContainer,
+          //   // height : (deviceAgent.platform.type == "desktop") ?(deviceAgent.os.name == "Windows") ? '78vh' : '100%' : '100%',
+            // maxWidth : width,
+            // overflow : 'hidden',
+            // // margin :'auto'
+            // height : '100vh',
+          //   // backgroundColor : (page['backgroundColor']) ? `rgba(${page['backgroundColor'].r},${page['backgroundColor'].g},${page['backgroundColor'].b},${page['backgroundColor'].a})`  : '#E4E4E4',
+          //   border: 'none'
           }}
           breakpoints={{lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0}}
           cols={{lg: 12, md: 10, sm: 6, xs: 4, xxs: 2}}
           layouts={layouts}
-          onWidthChange={(width)=>{
-            const sortedBreakpoints = Object.keys(layoutBreakPoints).sort(
-              (breakpoint1, breakpoint2) =>
-              layoutBreakPoints[breakpoint1] - layoutBreakPoints[breakpoint2]
-            );
-            let breakpoint = sortedBreakpoints[0];
-            for (let i = 0; i < sortedBreakpoints.length; i++) {
-                const currentBreakpoint = sortedBreakpoints[i];
-                const nextBreakpoint = sortedBreakpoints[i + 1];
-                if (
-                    typeof nextBreakpoint === "undefined" ||
-                    (layoutBreakPoints[currentBreakpoint] <= width &&
-                        width <= layoutBreakPoints[nextBreakpoint])
-                ) {
-                    breakpoint = currentBreakpoint;
-                    break;
-                }
-            }
-            console.log('init width',width,sortedBreakpoints,breakpoint);
-            setCurrentBreakPoint(breakpoint);
-          }}
+          // onWidthChange={(width)=>{
+          //   const sortedBreakpoints = Object.keys(layoutBreakPoints).sort(
+          //     (breakpoint1, breakpoint2) =>
+          //     layoutBreakPoints[breakpoint1] - layoutBreakPoints[breakpoint2]
+          //   );
+          //   let breakpoint = sortedBreakpoints[0];
+          //   for (let i = 0; i < sortedBreakpoints.length; i++) {
+          //       const currentBreakpoint = sortedBreakpoints[i];
+          //       const nextBreakpoint = sortedBreakpoints[i + 1];
+          //       if (
+          //           typeof nextBreakpoint === "undefined" ||
+          //           (layoutBreakPoints[currentBreakpoint] <= width &&
+          //               width <= layoutBreakPoints[nextBreakpoint])
+          //       ) {
+          //           breakpoint = currentBreakpoint;
+          //           break;
+          //       }
+          //   }
+          //   console.log('init width',width,sortedBreakpoints,breakpoint);
+          //   setCurrentBreakPoint(breakpoint);
+          // }}
           >
             {children}
         </Responsive>
+
       </div>
-    </div>
     ) : null
 }
 
