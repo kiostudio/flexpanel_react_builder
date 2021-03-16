@@ -13,12 +13,18 @@ on:
       # deploymentID:
       #   description: 'Deployment ID of the Build'
       #   required: true
-      # panelID:
-      #   description: 'Panel Id of the Deployment'
-      #   required: true
-      # versionID:
-      #   description: 'Version Id of the Deployment'
-      #   required: true
+      panelID:
+        description: 'Panel Id of the Deployment'
+        required: true
+      versionID:
+        description: 'Version Id of the Deployment'
+        required: true
+      organizationID:
+        description: 'Organization ID of this Vercel Account'
+        required: true
+      projectID:
+        description: 'Project ID of the Deployment'
+        required: true
 
 jobs:
   # Set the job key. The key is displayed as the job name
@@ -44,12 +50,12 @@ jobs:
 
       # Create vercel.json file to configure the deployment
       # {"name":"a75e23a4-8523-4932-bae2-471566222edd","build":{"env":{"PANEL_ID":"a75e23a4-8523-4932-bae2-471566222edd","VERSION_ID":"5ffc447b-703e-4032-bb26-570987ad4ad8"}}}
-      - name: Create JSON
-        uses: jsdaniell/create-json@1.1.2
-        with:
-          name: "vercel.json"
-          # json: ${{ github.event.inputs.vercelJSON }}
-          json: '{ "name" : "a75e23a4-8523-4932-bae2-471566222edd" }'
+      # - name: Create JSON
+      #   uses: jsdaniell/create-json@1.1.2
+      #   with:
+      #     name: "vercel.json"
+      #     # json: ${{ github.event.inputs.vercelJSON }}
+      #     json: '{ "name" : "a75e23a4-8523-4932-bae2-471566222edd" }'
 
       # # Webhook Status Update
       # - name: Invoke Deployment Hook (Deploy Start)
@@ -64,7 +70,9 @@ jobs:
         uses: amondnet/vercel-action@v20.0.0
         with:
           vercel-token: ${{ github.event.inputs.vercelToken }}
-          vercel-args: '--prod --confirm --build-env GRAPHQL_ENDPOINT=${{ secrets.GRAPHQL_ENDPOINT }} --build-env GRAPHQL_API_KEY=${{ secrets.GRAPHQL_API_KEY }} --build-env PANEL_ID=a75e23a4-8523-4932-bae2-471566222edd --build-env VERSION_ID=256c86f9-2b2a-42d0-891c-c5728e0efb99'
+          vercel-org-id: ${{ github.event.inputs.organizationID }}
+          vercel-project-id: ${{ github.event.inputs.projectID }}
+          vercel-args: '--prod --confirm --build-env GRAPHQL_ENDPOINT=${{ secrets.GRAPHQL_ENDPOINT }} --build-env GRAPHQL_API_KEY=${{ secrets.GRAPHQL_API_KEY }} --build-env PANEL_ID=${{ github.event.inputs.panelID }} --build-env VERSION_ID=${{ github.event.inputs.versionID }} '
 
       # Webhook Status Update
       # - name: Invoke Deployment Hook (Deploy Success)
