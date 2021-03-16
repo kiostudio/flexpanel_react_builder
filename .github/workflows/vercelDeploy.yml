@@ -4,15 +4,15 @@ name: Vercel-Deployment
 on: 
   workflow_dispatch:
     inputs:
-      vercelJSON:
-        description: 'JSON Configuration for the Vercel Project'     
-        required: true
+      # vercelJSON:
+      #   description: 'JSON Configuration for the Vercel Project'     
+      #   required: true
       vercelToken:
         description: 'Access Token of the Vercel Account'
         required: true
-      deploymentID:
-        description: 'Deployment ID of the Build'
-        required: true
+      # deploymentID:
+      #   description: 'Deployment ID of the Build'
+      #   required: true
       # panelID:
       #   description: 'Panel Id of the Deployment'
       #   required: true
@@ -31,54 +31,54 @@ jobs:
 
     steps:
       # Webhook Status Update
-      - name: Invoke Deployment Hook (Build Start)
-        uses: joelwmale/webhook-action@master
-        with:
-          url: "https://n2d37ssk5m.execute-api.us-east-1.amazonaws.com/default/flexpanelwebhookdeploy-dev"
-          headers: '{ "x-api-key": "${{ secrets.AWS_WEBHOOK_API_KEY }}" }'
-          body: '{"buildEvent": "deployment", "deploymentID": "${{ github.event.inputs.deploymentID }}", "status" : "buildStart" }'
+      # - name: Invoke Deployment Hook (Build Start)
+      #   uses: joelwmale/webhook-action@master
+      #   with:
+      #     url: "https://n2d37ssk5m.execute-api.us-east-1.amazonaws.com/default/flexpanelwebhookdeploy-dev"
+      #     headers: '{ "x-api-key": "${{ secrets.AWS_WEBHOOK_API_KEY }}" }'
+      #     body: '{"buildEvent": "deployment", "deploymentID": "${{ github.event.inputs.deploymentID }}", "status" : "buildStart" }'
 
-      # Checks out a copy of your repository on the ubuntu-latest machine
-      - name: Checkout code
-        uses: actions/checkout@v2
+      # # Checks out a copy of your repository on the ubuntu-latest machine
+      # - name: Checkout code
+      #   uses: actions/checkout@v2
 
-      # Create vercel.json file to configure the deployment
-      # {"name":"a75e23a4-8523-4932-bae2-471566222edd","build":{"env":{"PANEL_ID":"a75e23a4-8523-4932-bae2-471566222edd","VERSION_ID":"5ffc447b-703e-4032-bb26-570987ad4ad8"}}}
-      - name: Create JSON
-        uses: jsdaniell/create-json@1.1.2
-        with:
-          name: "vercel.json"
-          json: ${{ github.event.inputs.vercelJSON }}
+      # # Create vercel.json file to configure the deployment
+      # # {"name":"a75e23a4-8523-4932-bae2-471566222edd","build":{"env":{"PANEL_ID":"a75e23a4-8523-4932-bae2-471566222edd","VERSION_ID":"5ffc447b-703e-4032-bb26-570987ad4ad8"}}}
+      # - name: Create JSON
+      #   uses: jsdaniell/create-json@1.1.2
+      #   with:
+      #     name: "vercel.json"
+      #     json: ${{ github.event.inputs.vercelJSON }}
 
-      # Webhook Status Update
-      - name: Invoke Deployment Hook (Deploy Start)
-        uses: joelwmale/webhook-action@master
-        with:
-          url: "https://n2d37ssk5m.execute-api.us-east-1.amazonaws.com/default/flexpanelwebhookdeploy-dev"
-          headers: '{ "x-api-key": "${{ secrets.AWS_WEBHOOK_API_KEY }}" }'
-          body: '{"buildEvent": "deployment", "deploymentID": "${{ github.event.inputs.deploymentID }}", "status" : "deployVercelStart" }'
+      # # Webhook Status Update
+      # - name: Invoke Deployment Hook (Deploy Start)
+      #   uses: joelwmale/webhook-action@master
+      #   with:
+      #     url: "https://n2d37ssk5m.execute-api.us-east-1.amazonaws.com/default/flexpanelwebhookdeploy-dev"
+      #     headers: '{ "x-api-key": "${{ secrets.AWS_WEBHOOK_API_KEY }}" }'
+      #     body: '{"buildEvent": "deployment", "deploymentID": "${{ github.event.inputs.deploymentID }}", "status" : "deployVercelStart" }'
 
       # Runs the Super-Linter action
       - name: Vercel Action
         uses: amondnet/vercel-action@v20.0.0
         with:
           vercel-token: ${{ github.event.inputs.vercelToken }}
-          vercel-args: '--prod --confirm --build-env GRAPHQL_ENDPOINT=${{ secrets.GRAPHQL_ENDPOINT }} --build-env GRAPHQL_API_KEY=${{ secrets.GRAPHQL_API_KEY }}'
+          vercel-args: '--prod --confirm --build-env GRAPHQL_ENDPOINT=${{ secrets.GRAPHQL_ENDPOINT }} --build-env GRAPHQL_API_KEY=${{ secrets.GRAPHQL_API_KEY }} --build-env PANEL_ID='a75e23a4-8523-4932-bae2-471566222edd' --build-env VERSION_ID='256c86f9-2b2a-42d0-891c-c5728e0efb99''
 
       # Webhook Status Update
-      - name: Invoke Deployment Hook (Deploy Success)
-        if: ${{ success() }}
-        uses: joelwmale/webhook-action@master
-        with:
-          url: "https://n2d37ssk5m.execute-api.us-east-1.amazonaws.com/default/flexpanelwebhookdeploy-dev"
-          headers: '{ "x-api-key": "${{ secrets.AWS_WEBHOOK_API_KEY }}" }'
-          body: '{"buildEvent": "deployment", "deploymentID": "${{ github.event.inputs.deploymentID }}", "status" : "deployVercelSuccess" }'
+      # - name: Invoke Deployment Hook (Deploy Success)
+      #   if: ${{ success() }}
+      #   uses: joelwmale/webhook-action@master
+      #   with:
+      #     url: "https://n2d37ssk5m.execute-api.us-east-1.amazonaws.com/default/flexpanelwebhookdeploy-dev"
+      #     headers: '{ "x-api-key": "${{ secrets.AWS_WEBHOOK_API_KEY }}" }'
+      #     body: '{"buildEvent": "deployment", "deploymentID": "${{ github.event.inputs.deploymentID }}", "status" : "deployVercelSuccess" }'
 
-      # Webhook Status Update
-      - name: Invoke Deployment Hook (Deploy Fail)
-        if: ${{ failure() }}
-        uses: joelwmale/webhook-action@master
-        with:
-          url: "https://n2d37ssk5m.execute-api.us-east-1.amazonaws.com/default/flexpanelwebhookdeploy-dev"
-          headers: '{ "x-api-key": "${{ secrets.AWS_WEBHOOK_API_KEY }}" }'
-          body: '{"buildEvent": "deployment", "deploymentID": "${{ github.event.inputs.deploymentID }}", "status" : "deployVercelFail" }'
+      # # Webhook Status Update
+      # - name: Invoke Deployment Hook (Deploy Fail)
+      #   if: ${{ failure() }}
+      #   uses: joelwmale/webhook-action@master
+      #   with:
+      #     url: "https://n2d37ssk5m.execute-api.us-east-1.amazonaws.com/default/flexpanelwebhookdeploy-dev"
+      #     headers: '{ "x-api-key": "${{ secrets.AWS_WEBHOOK_API_KEY }}" }'
+      #     body: '{"buildEvent": "deployment", "deploymentID": "${{ github.event.inputs.deploymentID }}", "status" : "deployVercelFail" }'
