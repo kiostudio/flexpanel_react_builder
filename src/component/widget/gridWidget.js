@@ -153,30 +153,31 @@ function GridWidget({item,router,width,tabList}) {
     // const [widgetLayout] = useState(JSON.parse(JSON.stringify(basicWidgetsLayout)));
     const ref = useRef(null);
     const videoWrapperRef = useRef(null);
-    // useEffect(()=>{
-    //   if(gridWidth !== null){
-    //     // console.log('This Grid',item,selectedGrid);
-    //     const sortedBreakpoints = Object.keys(layoutBreakPoints).sort(
-    //       (breakpoint1, breakpoint2) =>
-    //       layoutBreakPoints[breakpoint1] - layoutBreakPoints[breakpoint2]
-    //     );
-    //     let breakpoint = sortedBreakpoints[0];
-    //     for (let i = 0; i < sortedBreakpoints.length; i++) {
-    //         const currentBreakpoint = sortedBreakpoints[i];
-    //         const nextBreakpoint = sortedBreakpoints[i + 1];
-    //         if (
-    //             typeof nextBreakpoint === "undefined" ||
-    //             (layoutBreakPoints[currentBreakpoint] <= gridWidth &&
-    //               gridWidth <= layoutBreakPoints[nextBreakpoint])
-    //         ) {
-    //             breakpoint = currentBreakpoint;
-    //             break;
-    //         }
-    //     }
-    //     // console.log('Update BreakPoint',breakpoint);
-    //     setCurrentBreakPoint(breakpoint);
-    //   }
-    // },[gridWidth])
+    useEffect(()=>{
+      // console.log('Grid Width',gridWidth)
+      if(gridWidth !== null){
+        // console.log('This Grid',item,selectedGrid);
+        const sortedBreakpoints = Object.keys(layoutBreakPoints).sort(
+          (breakpoint1, breakpoint2) =>
+          layoutBreakPoints[breakpoint1] - layoutBreakPoints[breakpoint2]
+        );
+        let breakpoint = sortedBreakpoints[0];
+        for (let i = 0; i < sortedBreakpoints.length; i++) {
+            const currentBreakpoint = sortedBreakpoints[i];
+            const nextBreakpoint = sortedBreakpoints[i + 1];
+            if (
+                typeof nextBreakpoint === "undefined" ||
+                (layoutBreakPoints[currentBreakpoint] <= gridWidth &&
+                  gridWidth <= layoutBreakPoints[nextBreakpoint])
+            ) {
+                breakpoint = currentBreakpoint;
+                break;
+            }
+        }
+        // console.log('Update BreakPoint',breakpoint);
+        setCurrentBreakPoint(breakpoint);
+      }
+    },[gridWidth])
     useEffect(()=>{
       // if(currentBreakPoint !== null) {
         console.log('Grid Widget',item);
@@ -193,6 +194,7 @@ function GridWidget({item,router,width,tabList}) {
               gridItem['i'] = gridItem.component.id;
               if(gridItem.component.props && typeof gridItem.component.props === 'string') gridItem.component.props = JSON.parse(gridItem.component.props);
               if(gridItem.component.actions && typeof gridItem.component.actions === 'string') gridItem.component.actions = JSON.parse(gridItem.component.actions);
+              if(gridItem.component.screenDisable && typeof gridItem.component.screenDisable === 'string') gridItem.component.screenDisable = JSON.parse(gridItem.component.screenDisable);
             })
             pageLayout[screen.breakPoint] = screen.grids; 
           // });
@@ -268,10 +270,12 @@ function GridWidget({item,router,width,tabList}) {
     },[])
     const children = useMemo(() => {
       // grid,setDragEnable,userRole,deviceAgent,userID,selectedGrid,currentBreakPoint
-      if(layouts != null){
-        // const grid = layouts[currentBreakPoint];
-        // console.log('Grid',grid);
-        return layouts['lg'].map((item)=>{
+      // console.log(currentBreakPoint);
+      if(layouts != null && currentBreakPoint !== null){
+        let targetLayout = layouts[currentBreakPoint];
+        // console.log(targetLayout)
+        targetLayout = targetLayout.filter((item)=>!(item.component && item.component.screenDisable && item.component.screenDisable !== null && item.component.screenDisable.filter((screen)=>screen === currentBreakPoint).length > 0));
+        return targetLayout.map((item)=>{
           return (item.i == 'loading') ? 
             <div key={'loading'} className={Classes.SKELETON} style={styles.skeletonContainer}></div> : 
             <div 
@@ -284,7 +288,7 @@ function GridWidget({item,router,width,tabList}) {
             </div>
         })
       }
-    },[layouts])
+    },[layouts,currentBreakPoint])
     useEffect(()=>{
       if(ref.current !== null){
         // console.log('Set Grid Width',ref.current)
@@ -418,7 +422,7 @@ function GridWidget({item,router,width,tabList}) {
             {(ref.current) ? renderBackgroundVideo : null}
             {renderOverlayGradient}
             {renderOverlayColor}
-            {(layouts !== null && gridWidth !== null) ? (
+            {(layouts !== null && gridWidth !== null && currentBreakPoint !== null) ? (
               <Responsive 
                 width={(gridWidth > width) ? width : gridWidth}
                 useCSSTransforms={false}
