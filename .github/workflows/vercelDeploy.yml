@@ -38,9 +38,9 @@ jobs:
       #     headers: '{ "x-api-key": "${{ secrets.AWS_WEBHOOK_API_KEY }}" }'
       #     body: '{"buildEvent": "deployment", "deploymentID": "${{ github.event.inputs.deploymentID }}", "status" : "buildStart" }'
 
-      # # Checks out a copy of your repository on the ubuntu-latest machine
-      # - name: Checkout code
-      #   uses: actions/checkout@v2
+      # Checks out a copy of your repository on the ubuntu-latest machine
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       # # Create vercel.json file to configure the deployment
       # # {"name":"a75e23a4-8523-4932-bae2-471566222edd","build":{"env":{"PANEL_ID":"a75e23a4-8523-4932-bae2-471566222edd","VERSION_ID":"5ffc447b-703e-4032-bb26-570987ad4ad8"}}}
