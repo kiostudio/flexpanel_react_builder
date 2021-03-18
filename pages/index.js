@@ -93,8 +93,8 @@ export default function Home({ page , title , favicon , tabList }) {
   return (
     <div>
       <Head>
-        <title>{`${page.name} | ${title}`}</title>
-        <meta name="description" content={`${(page && page.description) ? page.description : `${title} is an application build with Flexpanel, which is a tool to build software without coding.`}`}/>
+        <title>{(page.seo && page.seo.ogTitle) ? page.seo.ogTitle :`${page.name} | ${title}`}</title>
+        <meta name="description" content={(page.seo && page.seo.ogDescription) ? page.seo.ogDescription : `${(page && page.description) ? page.description : `${title} is an application build with Flexpanel, which is a tool to build software without coding.`}`}/>
         <meta property="og:title" content={(page.seo && page.seo.ogTitle) ? page.seo.ogTitle : `${page.name} | ${title}`} />
         <meta property="og:type" content="website" />
         <meta property="og:type" content="flexpanel.website" />
