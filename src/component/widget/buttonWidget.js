@@ -40,7 +40,7 @@ function ButtonWidget({itemProps,itemActions,item,setTabId,displayTab,subDomainM
         let buttonStyle = {
             transitionDuration : (init === true) ? (itemProps[buttonState] && itemProps[buttonState]['transitionDuration']) ? `${itemProps[buttonState]['transitionDuration']}s` : '0s' : `${(itemProps && itemProps['initiation'] && itemProps['initiation']['transitionDuration']) ? itemProps['initiation']['transitionDuration']+'s' : '0.5s'}`,
             transitionTimingFunction : ' ease-in-out',
-            backgroundColor : (props && props['buttonColor']) ? `rgba(${props['buttonColor'].r},${props['buttonColor'].g},${props['buttonColor'].b},${props['buttonColor'].a})` : (itemProps['default']  && itemProps['default']['fontColor']) ? `rgba(${itemProps['default'] ['fontColor'].r},${itemProps['default'] ['fontColor'].g},${itemProps['default'] ['fontColor'].b},${itemProps['default'] ['fontColor'].a})` : 'rgb(239, 239, 239)',
+            backgroundColor : (props && props['buttonColor']) ? `rgba(${props['buttonColor'].r},${props['buttonColor'].g},${props['buttonColor'].b},${props['buttonColor'].a})` : (itemProps['default']  && itemProps['default']['buttonColor']) ? `rgba(${itemProps['default'] ['buttonColor'].r},${itemProps['default'] ['buttonColor'].g},${itemProps['default'] ['buttonColor'].b},${itemProps['default'] ['buttonColor'].a})` : 'rgb(239, 239, 239)',
             color : (props && props['fontColor']) ? `rgba(${props['fontColor'].r},${props['fontColor'].g},${props['fontColor'].b},${props['fontColor'].a})` : '#000000',
             fontFamily : (props && props['fontFamily']) ? props['fontFamily'] : 'Arial',
             fontSize : (props && props['fontSize']) ? props['fontSize'] : 14,

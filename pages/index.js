@@ -81,6 +81,7 @@ export async function getStaticProps({ params }) {
     if(homePage.length > 0) homePage = homePage[0];
     if(homePage.length === 0) homePage = uiTemplate.tabs[0];
     if(homePage['backgroundColor'] !== null) homePage['backgroundColor'] = JSON.parse(homePage['backgroundColor'])
+    if(homePage['seo'] !== null) homePage['seo'] = JSON.parse(homePage['seo'])
   }
 
   return { props : { page : homePage , title : uiTemplate.name , favicon : uiTemplate.favicon , tabList : tabList } }
@@ -94,6 +95,11 @@ export default function Home({ page , title , favicon , tabList }) {
       <Head>
         <title>{`${page.name} | ${title}`}</title>
         <meta name="description" content={`${(page && page.description) ? page.description : `${title} is an application build with Flexpanel, which is a tool to build software without coding.`}`}/>
+        <meta property="og:title" content={(page.seo && page.seo.ogTitle) ? page.seo.ogTitle : `${page.name} | ${title}`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:type" content="flexpanel.website" />
+        <meta property="og:og:description" content={(page.seo && page.seo.ogDescription) ? page.seo.ogDescription : `${title} is an application build with Flexpanel, which is a tool to build software without coding.`}/>
+        <meta property="og:image" content={(page.seo && page.seo.ogImg) ? `data:image/png;base64,${page.seo.ogImg}` : null}/>
         <link rel="icon" href={(favicon !== null) ? `data:image/png;base64,${favicon}` :"/favicon.ico"}/>
       </Head>
       <main style={{
