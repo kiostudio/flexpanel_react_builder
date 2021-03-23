@@ -98,7 +98,7 @@ export async function getStaticPaths() {
         }
     });
 
-    console.log('Get Version Tab',getVersionTab.data.data.getVersion);
+    // console.log('Get Version Tab',getVersionTab.data.data.getVersion);
 
     getVersionTab.data.data.getVersion.tabs.items.map((tab)=>{
       // templatePath.push({ params : { route : (tab.route !== null && tab.route !== "") ? tab.route : tab.id } })
@@ -325,7 +325,7 @@ export async function getStaticProps({ params }) {
         }
     }
   }); 
-  console.log('Tab Object',getTabRequest.data.data.getTab);
+  // console.log('Tab Object',getTabRequest.data.data.getTab);
 
   let tabScreen = null;
   const tabGridAccordingtoSize = await axios({
@@ -343,76 +343,66 @@ export async function getStaticProps({ params }) {
         }
     }
   });
-  console.log('Grid by Tab',tabGridAccordingtoSize.data.data.byTabAndScreenSize);
+  // console.log('Grid by Tab',tabGridAccordingtoSize.data.data.byTabAndScreenSize);
   tabScreen = tabGridAccordingtoSize.data.data.byTabAndScreenSize;
 
   let recursive = 0;
   let recursiveEnd = 0;
 
   const recursiveGridCheck = async(grid,recursive)=>{
+    if(grid.component.type === 'grid'){
+      const componentGridAccordingtoSize = await axios({
+          url: process.env.GRAPHQL_ENDPOINT,
+          method: 'post',
+          headers: {
+              'x-api-key': process.env.GRAPHQL_API_KEY
+          },
+          data: {
+              query: print(byComponentAndScreenSize),
+              variables: {
+                componentID : grid.component.id,
+                // breakPoint:  { eq : breakPoint },
+                limit : 10000
+              }
+          }
+      });
+      // console.log('All Grid Component',componentGridAccordingtoSize.status);
+      // console.log('All Grid Component',componentGridAccordingtoSize.data.errors);
+      // console.log('All Grid Component',componentGridAccordingtoSize.data.data.byComponentAndScreenSize);
+      // console.log('All Grid Component',componentGridAccordingtoSize.data.data.byComponentAndScreenSize.items[0]);
+      const allScreenGrid = await Promise.all(componentGridAccordingtoSize.data.data.byComponentAndScreenSize.items.map(async(screen)=>{
+        const allScreenGridComp = await Promise.all(screen.grids.items.map(async(grid)=>{
+          return recursiveGridCheck(grid,recursive);
+        }))
+        screen.grids = allScreenGridComp;
+        return screen;
+      }))
+      grid.component.grids.items = allScreenGrid;
+      return grid;
+    } else {
 
-    // Check Whether this Grid Still has any Children
-
-    const componentGridAccordingtoSize = await axios({
-        url: process.env.GRAPHQL_ENDPOINT,
-        method: 'post',
-        headers: {
-            'x-api-key': process.env.GRAPHQL_API_KEY
-        },
-        data: {
-            query: print(byComponentAndScreenSize),
-            variables: {
-              componentID : grid.component.id,
-              // breakPoint:  { eq : breakPoint },
-              limit : 10000
-            }
-        }
-    });
-    console.log('All Grid Component',componentGridAccordingtoSize.status);
-    console.log('All Grid Component',componentGridAccordingtoSize.data.errors);
-    console.log('All Grid Component',componentGridAccordingtoSize.data.data.byComponentAndScreenSize);
-    console.log('All Grid Component',componentGridAccordingtoSize.data.data.byComponentAndScreenSize.items[0]);
-
-    // const allScreenGrid = await Promise.all(componentGridAccordingtoSize.data.data.byComponentAndScreenSize.items.map(async(screen)=>{
-    //   const allScreenGridComp = await Promise.all(screen.grids.items.map(async(grid)=>{
-    //     // return recursiveGridCheck(grid);
-    //     if(grid.component.type === 'grid'){
-    //       const res = await recursiveGridCheck(grid);
-    //       console.log(res);
-    //       return grid;
-    //     } else {
-    //       console.log('Recursive End',grid.component.type);
-    //       recursiveEnd++;
-    //       return grid;
-    //     }
-  
-    //   }))
-    //   screen.grids.items = allScreenGridComp;
-    //   return screen;
-    // }))
-    // recursive++;
-    return componentGridAccordingtoSize.data.data.byComponentAndScreenSize;
-    // return null;
+      return grid
+    }
   }
 
   const allScreenGrid = await Promise.all(tabScreen.items.map(async(screen)=>{
-    console.log('Tab Screen',screen);
+    // console.log('Tab Screen',screen);
     const allScreenGridComp = await Promise.all(screen.grids.items.map(async(grid)=>{
       // return recursiveGridCheck(grid);
 
       if(grid.component.type === 'grid'){
-        console.log('Tab grid',grid);
+        // console.log('Tab grid',grid);
         // console.log(grid.component.grids);
         // const res = await recursiveGridCheck(grid,recursive);
-        grid.items = await recursiveGridCheck(grid,recursive);
+        // grid.component.grids.items = recursiveGridCheck(grid,recursive);
         // console.log('Res',res);
         // grid.component.grids.items = await recursiveGridCheck(grid,recursive);
         // grid = await recursiveGridCheck(grid,recursive);
         recursive++;
         // grid.
-        return grid;
+        return recursiveGridCheck(grid,recursive);
       } else {
-        console.log('Recursive End',grid.component.type);
+        // console.log('Recursive End',grid.component.type);
         recursiveEnd++;
         return grid;
       }
@@ -426,10 +416,10 @@ export async function getStaticProps({ params }) {
   getTabRequest.data.data.getTab.screens = {};
   getTabRequest.data.data.getTab.screens.items = allScreenGrid
   
-  console.log(recursive);
-  console.log(recursiveEnd);
+  // console.log(recursive);
+  // console.log(recursiveEnd);
   console.log('Page Object',getTabRequest.data.data.getTab.screens.items);
-  return { props : { page : getTabRequest.data.data.getTab } }
+  return { props : { page : getTabRequest.data.data.getTab , tabList : [] } }
 
 
   // const axios = require('axios');
@@ -506,6 +496,10 @@ const styles = {
   }
 }
 
+// Problems to solve :
+// 1. Image Processing
+// 2. Tablist
+// 3. Title / Description / SEO
 
 // export default function Home({ page }) {
 //     console.log(page);
@@ -522,8 +516,8 @@ const styles = {
 //       </div>
 //     )
 //   }
-export default function Home({ page , title , favicon }) {
-//   console.log(page);
+export default function Home({ page , tabList, title , favicon }) {
+  console.log('Page',page);
   const router = useRouter();
   return (
     <div>
@@ -551,6 +545,7 @@ export default function Home({ page , title , favicon }) {
               page={page}
               title={title}
               router={router}
+              tabList={tabList}
               // setTabId={setTabId}
               // deviceAgent={deviceAgent} 
               // panelId={panelId}

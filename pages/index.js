@@ -67,8 +67,10 @@ export async function getStaticProps({ params }) {
     data: {
         query: print(uiGenerator),
         variables: {
-          panelID: process.env.PANEL_ID,
-          versionID: process.env.VERSION_ID
+          // panelID: process.env.PANEL_ID,
+          // versionID: process.env.VERSION_ID
+          panelID: 'a75e23a4-8523-4932-bae2-471566222edd',
+          versionID:  'd2ad6b9a-3b02-487a-931e-ed5099f13974'
         }
     }
   });
