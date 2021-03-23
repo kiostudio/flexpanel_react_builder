@@ -3,6 +3,21 @@ import { useRouter } from 'next/router';
 // import dynamic from 'next/dynamic'
 import Grid from '../../src/component/panel/grid';
 // import styles from '../styles/Home.module.css'
+import Amplify, { Storage } from 'aws-amplify';
+Amplify.configure({ 
+    "aws_project_region": "us-east-1",
+    "aws_cognito_identity_pool_id": "us-east-1:c3faeb6c-0d99-4354-a48f-254d5d245d07",
+    "aws_cognito_region": "us-east-1",
+    "aws_user_pools_id": "us-east-1_DVqghGqEM",
+    "aws_user_pools_web_client_id": "66u8kmqjp59522q3858hqugt7d",
+    "oauth": {},
+    "aws_appsync_graphqlEndpoint": "https://ps4ky2nur5crxkjfkldkifixk4.appsync-api.us-east-1.amazonaws.com/graphql",
+    "aws_appsync_region": "us-east-1",
+    "aws_appsync_authenticationType": "API_KEY",
+    "aws_appsync_apiKey": "da2-2hwjj5un6rempchkqdmjci2vfe",
+    "aws_user_files_s3_bucket": "flexpanel6ed38163d00647a6ba3ac8d8dac7f5a4102144-dev",
+    "aws_user_files_s3_bucket_region": "us-east-1"
+});
 
 
 export async function getStaticPaths() {
@@ -10,24 +25,6 @@ export async function getStaticPaths() {
     const gql = require('graphql-tag');
     const graphql = require('graphql');
     const { print } = graphql;
-    let templatePath = [];
-
-    const getPanel = gql`
-      query GetPanel($id: ID!) {
-        getPanel(id: $id) {
-          id
-          name
-          availability
-          createdAt
-          updatedAt
-          userID
-          priority
-          thumbnail
-          logo
-          favicon
-        }
-      }
-    `;
     const getVersion = gql`
       query GetVersion($id: ID!) {
         getVersion(id: $id) {
@@ -62,28 +59,6 @@ export async function getStaticPaths() {
         }
       }
     `;
-
-    // const getPanelRequest = await axios({
-    //   url: process.env.GRAPHQL_ENDPOINT,
-    //   method: 'post',
-    //   headers: {
-    //       'x-api-key': process.env.GRAPHQL_API_KEY
-    //   },
-    //   data: {
-    //       query: print(getPanel),
-    //       variables: {
-    //         id: 'a75e23a4-8523-4932-bae2-471566222edd'
-    //       }
-    //   }
-    // });
-    // console.log('getPanelRequest Record Res',getPanelRequest.data.data.getPanel);
-    // if(getPanelRequest.data.data.getPanel.favicon !== null){
-    //   const favicon = await s3.getObject({ Bucket: process.env.STORAGE_FLEXPANELSTORAGE_BUCKETNAME, Key: 'public/'+getPanelRequest.data.data.getPanel.favicon }).promise();
-    //   // console.log(favicon);
-    //   if(favicon && favicon.Body){
-    //     getPanelRequest.data.data.getPanel.favicon = Buffer.from(favicon.Body).toString('base64');
-    //   }
-    // }
     const getVersionTab = await axios({
         url: process.env.GRAPHQL_ENDPOINT,
         method: 'post',
@@ -93,24 +68,18 @@ export async function getStaticPaths() {
         data: {
             query: print(getVersion),
             variables: {
-              id: '5ffc447b-703e-4032-bb26-570987ad4ad8'
+              id: process.env.VERSION_ID
             }
         }
     });
-
+    let templatePath = [];
     // console.log('Get Version Tab',getVersionTab.data.data.getVersion);
-
     getVersionTab.data.data.getVersion.tabs.items.map((tab)=>{
-      // templatePath.push({ params : { route : (tab.route !== null && tab.route !== "") ? tab.route : tab.id } })
-      templatePath.push({ params : { route : tab.id } })
+      templatePath.push({ params : { route : (tab.route !== null && tab.route !== "") ? tab.route : tab.id } })
+      // templatePath.push({ params : { route : tab.id } })
     })
-
     console.log('Template Path',templatePath);
-
     return { paths : templatePath , fallback : false }
-
-
-
     // const axios = require('axios');
     // const gql = require('graphql-tag');
     // const graphql = require('graphql');
@@ -291,6 +260,22 @@ export async function getStaticProps({ params }) {
       }
     }
   `;
+  const getPanel = gql`
+    query GetPanel($id: ID!) {
+      getPanel(id: $id) {
+        id
+        name
+        availability
+        createdAt
+        updatedAt
+        userID
+        priority
+        thumbnail
+        logo
+        favicon
+      }
+    }
+  `;
   const getTab = gql`
     query GetTab($id: ID!) {
       getTab(id: $id) {
@@ -311,6 +296,88 @@ export async function getStaticProps({ params }) {
       }
     }
   `;
+  const getVersion = gql`
+    query GetVersion($id: ID!) {
+      getVersion(id: $id) {
+        id
+        name
+        major
+        minor
+        patch
+        createdAt
+        updatedAt
+        panelID
+        branch
+        tabs {
+          items {
+            id
+            name
+            availability
+            createdAt
+            updatedAt
+            panelID
+            versionID
+            priority
+            route
+            parentID
+            description
+            maxWidth
+            backgroundColor
+            seo
+          }
+          nextToken
+        }
+      }
+    }
+  `;
+
+  let tabList = [];
+  let tabScreen = null;
+  let favicon = null;
+  let title = null;
+  let targetTabId = null;
+
+  const getVersionTab = await axios({
+    url: process.env.GRAPHQL_ENDPOINT,
+    method: 'post',
+    headers: {
+        'x-api-key': process.env.GRAPHQL_API_KEY
+    },
+    data: {
+        query: print(getVersion),
+        variables: {
+          id: process.env.VERSION_ID
+        }
+    }
+  });
+  getVersionTab.data.data.getVersion.tabs.items.map((tab)=>{
+    tabList.push({ id : tab.id , route : tab.route })
+    if(tab.id === params.route) targetTabId = tab.id;
+    if(tab.route === params.route) targetTabId = tab.id
+  })
+  const getPanelRequest = await axios({
+    url: process.env.GRAPHQL_ENDPOINT,
+    method: 'post',
+    headers: {
+        'x-api-key': process.env.GRAPHQL_API_KEY
+    },
+    data: {
+        query: print(getPanel),
+        variables: {
+          id: process.env.PANEL_ID
+        }
+    }
+  });
+  // console.log('getPanelRequest Record Res',getPanelRequest.data.data.getPanel);
+  if(getPanelRequest.data.data.getPanel.favicon !== null){
+    const faviconSrc = await Storage.get(getPanelRequest.data.data.getPanel.favicon , { level: 'public' });
+    title = getPanelRequest.data.data.getPanel.name;
+    let image = await axios.get(faviconSrc, {responseType: 'arraybuffer'});
+    let returnedB64 = Buffer.from(image.data).toString('base64');
+    if(returnedB64){
+      favicon = returnedB64;
+    }
+  }
 
   const getTabRequest = await axios({
     url: process.env.GRAPHQL_ENDPOINT,
@@ -321,13 +388,11 @@ export async function getStaticProps({ params }) {
     data: {
         query: print(getTab),
         variables: {
-          id : params.route
+          id : targetTabId
         }
     }
   }); 
   // console.log('Tab Object',getTabRequest.data.data.getTab);
-
-  let tabScreen = null;
   const tabGridAccordingtoSize = await axios({
     url: process.env.GRAPHQL_ENDPOINT,
     method: 'post',
@@ -346,11 +411,24 @@ export async function getStaticProps({ params }) {
   // console.log('Grid by Tab',tabGridAccordingtoSize.data.data.byTabAndScreenSize);
   tabScreen = tabGridAccordingtoSize.data.data.byTabAndScreenSize;
 
-  let recursive = 0;
-  let recursiveEnd = 0;
-
-  const recursiveGridCheck = async(grid,recursive)=>{
+  const recursiveGridCheck = async(grid)=>{
     if(grid.component.type === 'grid'){
+      if(grid.component.props !== null){
+        let gridItemProps = JSON.parse(grid.component.props);
+        if(gridItemProps['default']['backgroundImage']){
+          if(gridItemProps['default']['backgroundImage']['key']){
+            if(!gridItemProps['default']['backgroundImage']['key'].includes('https://')) {
+              const imgSrc = await Storage.get(gridItemProps['default']['backgroundImage']['key'] , { level: 'public'  });
+              let image = await axios.get(imgSrc, {responseType: 'arraybuffer'});
+              let returnedB64 = Buffer.from(image.data).toString('base64');
+              if(returnedB64){
+                gridItemProps['default']['backgroundImage']['image']  = returnedB64;
+                grid.component.props = JSON.stringify(gridItemProps);
+              }
+            };
+          }
+        }
+      }
       const componentGridAccordingtoSize = await axios({
           url: process.env.GRAPHQL_ENDPOINT,
           method: 'post',
@@ -366,13 +444,10 @@ export async function getStaticProps({ params }) {
               }
           }
       });
-      // console.log('All Grid Component',componentGridAccordingtoSize.status);
-      // console.log('All Grid Component',componentGridAccordingtoSize.data.errors);
-      // console.log('All Grid Component',componentGridAccordingtoSize.data.data.byComponentAndScreenSize);
-      // console.log('All Grid Component',componentGridAccordingtoSize.data.data.byComponentAndScreenSize.items[0]);
+      if(componentGridAccordingtoSize.data.errors) console.log('GraphQL Error',componentGridAccordingtoSize.data.errors);
       const allScreenGrid = await Promise.all(componentGridAccordingtoSize.data.data.byComponentAndScreenSize.items.map(async(screen)=>{
         const allScreenGridComp = await Promise.all(screen.grids.items.map(async(grid)=>{
-          return recursiveGridCheck(grid,recursive);
+          return await recursiveGridCheck(grid);
         }))
         screen.grids = allScreenGridComp;
         return screen;
@@ -380,7 +455,25 @@ export async function getStaticProps({ params }) {
       grid.component.grids.items = allScreenGrid;
       return grid;
     } else {
-
+      if(grid.component.type == 'image' && grid.component.props !== null){
+        let itemProps = JSON.parse(grid.component.props);
+        // console.log(imageProps);
+        if(itemProps['default'] && itemProps['default']['image']){
+          if(itemProps['default']['image']['key']){
+              // console.log('New Context',itemProps['default']['image']['key']);
+              if(!itemProps['default']['image']['key'].includes('https://')) {
+                // const imgSrc = await s3.getObject({ Bucket: process.env.STORAGE_FLEXPANELSTORAGE_BUCKETNAME, Key: 'public/'+itemProps['default']['image']['key'] }).promise();
+                const imgSrc = await Storage.get(itemProps['default']['image']['key'] , { level: 'public'  });
+                let image = await axios.get(imgSrc, {responseType: 'arraybuffer'});
+                let returnedB64 = Buffer.from(image.data).toString('base64');
+                if(returnedB64){
+                  itemProps['default']['image']  = returnedB64;
+                  grid.component.props = JSON.stringify(itemProps);
+                }
+              }
+          }
+        }
+      }
       return grid
     }
   }
@@ -389,7 +482,6 @@ export async function getStaticProps({ params }) {
     // console.log('Tab Screen',screen);
     const allScreenGridComp = await Promise.all(screen.grids.items.map(async(grid)=>{
       // return recursiveGridCheck(grid);
-
       if(grid.component.type === 'grid'){
         // console.log('Tab grid',grid);
         // console.log(grid.component.grids);
@@ -398,12 +490,12 @@ export async function getStaticProps({ params }) {
         // console.log('Res',res);
         // grid.component.grids.items = await recursiveGridCheck(grid,recursive);
         // grid = await recursiveGridCheck(grid,recursive);
-        recursive++;
+        // recursive++;
         // grid.
-        return recursiveGridCheck(grid,recursive);
+        return await recursiveGridCheck(grid);
       } else {
         // console.log('Recursive End',grid.component.type);
-        recursiveEnd++;
+        // recursiveEnd++;
         return grid;
       }
 
@@ -415,12 +507,15 @@ export async function getStaticProps({ params }) {
 
   getTabRequest.data.data.getTab.screens = {};
   getTabRequest.data.data.getTab.screens.items = allScreenGrid
+
+  if(getTabRequest.data.data.getTab['backgroundColor'] !== null) getTabRequest.data.data.getTab['backgroundColor'] = JSON.parse(getTabRequest.data.data.getTab['backgroundColor'])
   
   // console.log(recursive);
   // console.log(recursiveEnd);
   console.log('Page Object',getTabRequest.data.data.getTab.screens.items);
-  return { props : { page : getTabRequest.data.data.getTab , tabList : [] } }
-
+  console.log('Wait for 1 s');
+  return { props : { page : getTabRequest.data.data.getTab , tabList : [] , favicon : favicon , title : title } };
+  // return { props : { page : getTabRequest.data.data.getTab , tabList : [] , favicon : favicon , title : title } }
 
   // const axios = require('axios');
   // const gql = require('graphql-tag');
@@ -501,34 +596,19 @@ const styles = {
 // 2. Tablist
 // 3. Title / Description / SEO
 
-// export default function Home({ page }) {
-//     console.log(page);
-//     const router = useRouter();
-//     return (
-//       <div>
-//         <Head>
-//         </Head>
-//         <main style={{
-//           ...styles.mainContainer,
-//         }}>
-//           <h1>{'Test New Mechanism'}</h1>
-//         </main>
-//       </div>
-//     )
-//   }
 export default function Home({ page , tabList, title , favicon }) {
   console.log('Page',page);
   const router = useRouter();
   return (
     <div>
       <Head>
-        {/* <title>{`${page.name} | ${title}`}</title> */}
-        {/* <meta name="description" content={`${(page && page.description) ? page.description : `${title} is an application build with Flexpanel, which is a tool to build software without coding.`}`}/> */}
-        {/* <link rel="icon" href={(favicon !== null) ? `data:image/png;base64,${favicon}` :"/favicon.ico"}/> */}
+        <title>{`${page.name} | ${title}`}</title>
+        <meta name="description" content={`${(page && page.description) ? page.description : `${title} is an application build with Flexpanel, which is a tool to build software without coding.`}`}/>
+        <link rel="icon" href={(favicon !== null) ? `data:image/png;base64,${favicon}` :"/favicon.ico"}/>
       </Head>
       <main style={{
         ...styles.mainContainer,
-        // backgroundColor : (page && page['backgroundColor']) ? `rgba(${page['backgroundColor'].r},${page['backgroundColor'].g},${page['backgroundColor'].b},${page['backgroundColor'].a})`  : '#E4E4E4',
+        backgroundColor : (page && page['backgroundColor']) ? `rgba(${page['backgroundColor'].r},${page['backgroundColor'].g},${page['backgroundColor'].b},${page['backgroundColor'].a})`  : '#E4E4E4',
       }}>
           <div onClick={()=>{}} style={{ position : 'absolute' , zIndex : 10 , bottom : 20 , right : 20 , fontWeight : 'bold' , borderRadius : 20 }}>
             <a href='/' style={styles.logoContainer}>

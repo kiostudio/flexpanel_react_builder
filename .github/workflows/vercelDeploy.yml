@@ -14,7 +14,10 @@ on:
         description: 'Panel Id of the Deployment'
         required: true
       versionID:
-        description: 'Version Id of the Deployment'
+        description: 'Current Version Id of the Deployment'
+        required: true
+      newVersionID:
+        description: 'New Version Id of the Deployment'
         required: true
       organizationID:
         description: 'Organization ID of this Vercel Account'
@@ -62,7 +65,7 @@ jobs:
           vercel-project-id: ${{ github.event.inputs.projectID }}
           alias-domains: |
             ${{ github.event.inputs.deploymentID }}
-          vercel-args: '--prod --confirm --build-env GRAPHQL_ENDPOINT=${{ secrets.GRAPHQL_ENDPOINT }} --build-env GRAPHQL_API_KEY=${{ secrets.GRAPHQL_API_KEY }} --build-env PANEL_ID=${{ github.event.inputs.panelID }} --build-env VERSION_ID=${{ github.event.inputs.versionID }} '
+          vercel-args: '--prod --confirm --build-env GRAPHQL_ENDPOINT=${{ secrets.GRAPHQL_ENDPOINT }} --build-env GRAPHQL_API_KEY=${{ secrets.GRAPHQL_API_KEY }} --build-env PANEL_ID=${{ github.event.inputs.panelID }} --build-env VERSION_ID=${{ github.event.inputs.versionID }} --build-env NEW_VERSION_ID=${{ github.event.inputs.newVersionID }}'
 
       # Webhook Status Update
       - name: Invoke Deployment Hook (Deploy Success)

@@ -139,7 +139,8 @@ function ButtonWidget({itemProps,itemActions,item,setTabId,displayTab,subDomainM
                         if (linkAction.newWindow == true) {
                             window.open(linkAction['url']);
                         } else{
-                            router.push(linkAction['url']);
+                            // router.push('/',linkAction['url']);
+                            window.location.href = linkAction['url'];
                         }
                         // if (linkAction.newWindow == false) router.push(linkAction['url']);
                     //     console.log('LinkAction',linkAction);

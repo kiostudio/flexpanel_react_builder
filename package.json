@@ -6,10 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "testDev" : "PANEL_ID='a75e23a4-8523-4932-bae2-471566222edd' VERSION_ID='d2ad6b9a-3b02-487a-931e-ed5099f13974' GRAPHQL_API_KEY='da2-2hwjj5un6rempchkqdmjci2vfe' GRAPHQL_ENDPOINT='https://ps4ky2nur5crxkjfkldkifixk4.appsync-api.us-east-1.amazonaws.com/graphql' next dev",
-    "testBuild" : "PANEL_ID='a75e23a4-8523-4932-bae2-471566222edd' VERSION_ID='d2ad6b9a-3b02-487a-931e-ed5099f13974' GRAPHQL_API_KEY='da2-2hwjj5un6rempchkqdmjci2vfe' GRAPHQL_ENDPOINT='https://ps4ky2nur5crxkjfkldkifixk4.appsync-api.us-east-1.amazonaws.com/graphql' next build"
+    "testDev": "PANEL_ID='a75e23a4-8523-4932-bae2-471566222edd' VERSION_ID='5ffc447b-703e-4032-bb26-570987ad4ad8' GRAPHQL_API_KEY='da2-2hwjj5un6rempchkqdmjci2vfe' GRAPHQL_ENDPOINT='https://ps4ky2nur5crxkjfkldkifixk4.appsync-api.us-east-1.amazonaws.com/graphql' next dev",
+    "testBuild": "PANEL_ID='a75e23a4-8523-4932-bae2-471566222edd' VERSION_ID='5ffc447b-703e-4032-bb26-570987ad4ad8' GRAPHQL_API_KEY='da2-2hwjj5un6rempchkqdmjci2vfe' GRAPHQL_ENDPOINT='https://ps4ky2nur5crxkjfkldkifixk4.appsync-api.us-east-1.amazonaws.com/graphql' next build"
   },
   "dependencies": {
+    "aws-amplify": "^3.3.25",
     "axios": "^0.21.1",
     "graphql": "^15.5.0",
     "graphql-tag": "^2.11.0",
