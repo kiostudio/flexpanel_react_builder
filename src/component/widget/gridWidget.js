@@ -188,15 +188,19 @@ function GridWidget({item,router,width,tabList}) {
           xs : [],
           xxs : []
         }        
-        item.component.grids.items.map((screen)=>{
+        item.component.grids.items.map((screens)=>{
           // screens.map((screen)=>{
-            screen.grids.map((gridItem)=>{
+            // screen.grids.map((gridItem)=>{
+            console.log('Screen',screens);
+            screens.map((screen)=>{
+              const { grid , breakPoint } = screen;
+              let gridItem = grid;
               gridItem['i'] = gridItem.component.id;
               if(gridItem.component.props && typeof gridItem.component.props === 'string') gridItem.component.props = JSON.parse(gridItem.component.props);
               if(gridItem.component.actions && typeof gridItem.component.actions === 'string') gridItem.component.actions = JSON.parse(gridItem.component.actions);
               if(gridItem.component.screenDisable && typeof gridItem.component.screenDisable === 'string') gridItem.component.screenDisable = JSON.parse(gridItem.component.screenDisable);
+              pageLayout[breakPoint] = pageLayout[breakPoint].concat([gridItem]); 
             })
-            pageLayout[screen.breakPoint] = screen.grids; 
           // });
           //   screen.grids.items.map(async(gridItem)=>{
           //     gridItem['i'] = gridItem.id;

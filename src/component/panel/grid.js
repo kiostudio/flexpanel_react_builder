@@ -119,7 +119,8 @@ function Grid({ page, title, router, pageId , tabList }) {
         xxs : []
       }
       
-      page.screens.items.map((screen)=>{
+      page.items.map((screen)=>{
+      // page.screens.items.map((screen)=>{
         screen.grids.items.map(async(gridItem)=>{
           gridItem['i'] = gridItem.component.id;
           if(gridItem.component.props && typeof gridItem.component.props === 'string') gridItem.component.props = JSON.parse(gridItem.component.props);

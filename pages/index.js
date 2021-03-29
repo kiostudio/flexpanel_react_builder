@@ -18,6 +18,7 @@ Amplify.configure({
     "aws_user_files_s3_bucket": "flexpanel6ed38163d00647a6ba3ac8d8dac7f5a4102144-dev",
     "aws_user_files_s3_bucket_region": "us-east-1"
 });
+import TestTemplate from '../public/test6.json';
 
 
 // export async function getStaticPaths() {
@@ -63,412 +64,414 @@ Amplify.configure({
 // }
 
 export async function getStaticProps({ params }) {
+  // console.log('Test Template',TestTemplate.name);
+  return { props : { page : TestTemplate , title : TestTemplate.name , favicon : null , tabList : [] } }
   // console.log('API Params',process.env.GRAPHQL_ENDPOINT);
-  const axios = require('axios');
-  const gql = require('graphql-tag');
-  const graphql = require('graphql');
-  const { print } = graphql;
+  // const axios = require('axios');
+  // const gql = require('graphql-tag');
+  // const graphql = require('graphql');
+  // const { print } = graphql;
   
-  const byTabAndScreenSize = gql`
-    query ByTabAndScreenSize(
-      $tabID: ID
-      $breakPoint: ModelStringKeyConditionInput
-      $sortDirection: ModelSortDirection
-      $filter: ModelScreensizeFilterInput
-      $limit: Int
-      $nextToken: String
-    ) {
-      byTabAndScreenSize(
-        tabID: $tabID
-        breakPoint: $breakPoint
-        sortDirection: $sortDirection
-        filter: $filter
-        limit: $limit
-        nextToken: $nextToken
-      ) {
-        items {
-          id
-          createdAt
-          updatedAt
-          breakPoint
-          tabID
-          componentID
-          grids {
-            items{
-              id
-              createdAt
-              updatedAt
-              x
-              y
-              h
-              w
-              minW
-              minH
-              maxW
-              maxH
-              component {
-                id
-                type
-                name
-                props
-                actions
-                screenDisable
-                # displayTimeZone
-                # clockType
-                # countryCode
-                # keywords
-                # dateFilterStart
-                # dateFilterEnd
-                # filterLock
-                # isLive
-                # twitterOAuthID
-                grids{
-                  items {
-                    id
-                  }
-                  nextToken
-                }
-                createdAt
-                updatedAt
-              }
-            }
-            nextToken
-          }
-        }
-        nextToken
-      }
-    }
-  `;
-  const byComponentAndScreenSize = gql`
-    query ByComponentAndScreenSize(
-      $componentID: ID
-      $breakPoint: ModelStringKeyConditionInput
-      $sortDirection: ModelSortDirection
-      $filter: ModelScreensizeFilterInput
-      $limit: Int
-      $nextToken: String
-    ) {
-      byComponentAndScreenSize(
-        componentID: $componentID
-        breakPoint: $breakPoint
-        sortDirection: $sortDirection
-        filter: $filter
-        limit: $limit
-        nextToken: $nextToken
-      ) {
-        items {
-          id
-          createdAt
-          updatedAt
-          breakPoint
-          tabID
-          componentID
-          grids {
-            items{
-              id
-              createdAt
-              updatedAt
-              x
-              y
-              h
-              w
-              minW
-              minH
-              maxW
-              maxH
-              component {
-                id
-                type
-                name
-                props
-                actions
-                screenDisable
-                # displayTimeZone
-                # clockType
-                # countryCode
-                # keywords
-                # dateFilterStart
-                # dateFilterEnd
-                # filterLock
-                # isLive
-                # twitterOAuthID
-                grids{
-                  items {
-                    id
-                  }
-                  nextToken
-                }
-                createdAt
-                updatedAt
-              }
-            }
-            nextToken
-          }
-        }
-        nextToken
-      }
-    }
-  `;
-  const getPanel = gql`
-    query GetPanel($id: ID!) {
-      getPanel(id: $id) {
-        id
-        name
-        availability
-        createdAt
-        updatedAt
-        userID
-        priority
-        thumbnail
-        logo
-        favicon
-      }
-    }
-  `;
-  const getTab = gql`
-    query GetTab($id: ID!) {
-      getTab(id: $id) {
-        id
-        name
-        availability
-        createdAt
-        updatedAt
-        panelID
-        versionID
-        priority
-        route
-        parentID
-        description
-        maxWidth
-        backgroundColor
-        seo
-      }
-    }
-  `;
-  const getVersion = gql`
-    query GetVersion($id: ID!) {
-      getVersion(id: $id) {
-        id
-        name
-        major
-        minor
-        patch
-        createdAt
-        updatedAt
-        panelID
-        branch
-        tabs {
-          items {
-            id
-            name
-            availability
-            createdAt
-            updatedAt
-            panelID
-            versionID
-            priority
-            route
-            parentID
-            description
-            maxWidth
-            backgroundColor
-            seo
-          }
-          nextToken
-        }
-      }
-    }
-  `;
+  // const byTabAndScreenSize = gql`
+  //   query ByTabAndScreenSize(
+  //     $tabID: ID
+  //     $breakPoint: ModelStringKeyConditionInput
+  //     $sortDirection: ModelSortDirection
+  //     $filter: ModelScreensizeFilterInput
+  //     $limit: Int
+  //     $nextToken: String
+  //   ) {
+  //     byTabAndScreenSize(
+  //       tabID: $tabID
+  //       breakPoint: $breakPoint
+  //       sortDirection: $sortDirection
+  //       filter: $filter
+  //       limit: $limit
+  //       nextToken: $nextToken
+  //     ) {
+  //       items {
+  //         id
+  //         createdAt
+  //         updatedAt
+  //         breakPoint
+  //         tabID
+  //         componentID
+  //         grids {
+  //           items{
+  //             id
+  //             createdAt
+  //             updatedAt
+  //             x
+  //             y
+  //             h
+  //             w
+  //             minW
+  //             minH
+  //             maxW
+  //             maxH
+  //             component {
+  //               id
+  //               type
+  //               name
+  //               props
+  //               actions
+  //               screenDisable
+  //               # displayTimeZone
+  //               # clockType
+  //               # countryCode
+  //               # keywords
+  //               # dateFilterStart
+  //               # dateFilterEnd
+  //               # filterLock
+  //               # isLive
+  //               # twitterOAuthID
+  //               grids{
+  //                 items {
+  //                   id
+  //                 }
+  //                 nextToken
+  //               }
+  //               createdAt
+  //               updatedAt
+  //             }
+  //           }
+  //           nextToken
+  //         }
+  //       }
+  //       nextToken
+  //     }
+  //   }
+  // `;
+  // const byComponentAndScreenSize = gql`
+  //   query ByComponentAndScreenSize(
+  //     $componentID: ID
+  //     $breakPoint: ModelStringKeyConditionInput
+  //     $sortDirection: ModelSortDirection
+  //     $filter: ModelScreensizeFilterInput
+  //     $limit: Int
+  //     $nextToken: String
+  //   ) {
+  //     byComponentAndScreenSize(
+  //       componentID: $componentID
+  //       breakPoint: $breakPoint
+  //       sortDirection: $sortDirection
+  //       filter: $filter
+  //       limit: $limit
+  //       nextToken: $nextToken
+  //     ) {
+  //       items {
+  //         id
+  //         createdAt
+  //         updatedAt
+  //         breakPoint
+  //         tabID
+  //         componentID
+  //         grids {
+  //           items{
+  //             id
+  //             createdAt
+  //             updatedAt
+  //             x
+  //             y
+  //             h
+  //             w
+  //             minW
+  //             minH
+  //             maxW
+  //             maxH
+  //             component {
+  //               id
+  //               type
+  //               name
+  //               props
+  //               actions
+  //               screenDisable
+  //               # displayTimeZone
+  //               # clockType
+  //               # countryCode
+  //               # keywords
+  //               # dateFilterStart
+  //               # dateFilterEnd
+  //               # filterLock
+  //               # isLive
+  //               # twitterOAuthID
+  //               grids{
+  //                 items {
+  //                   id
+  //                 }
+  //                 nextToken
+  //               }
+  //               createdAt
+  //               updatedAt
+  //             }
+  //           }
+  //           nextToken
+  //         }
+  //       }
+  //       nextToken
+  //     }
+  //   }
+  // `;
+  // const getPanel = gql`
+  //   query GetPanel($id: ID!) {
+  //     getPanel(id: $id) {
+  //       id
+  //       name
+  //       availability
+  //       createdAt
+  //       updatedAt
+  //       userID
+  //       priority
+  //       thumbnail
+  //       logo
+  //       favicon
+  //     }
+  //   }
+  // `;
+  // const getTab = gql`
+  //   query GetTab($id: ID!) {
+  //     getTab(id: $id) {
+  //       id
+  //       name
+  //       availability
+  //       createdAt
+  //       updatedAt
+  //       panelID
+  //       versionID
+  //       priority
+  //       route
+  //       parentID
+  //       description
+  //       maxWidth
+  //       backgroundColor
+  //       seo
+  //     }
+  //   }
+  // `;
+  // const getVersion = gql`
+  //   query GetVersion($id: ID!) {
+  //     getVersion(id: $id) {
+  //       id
+  //       name
+  //       major
+  //       minor
+  //       patch
+  //       createdAt
+  //       updatedAt
+  //       panelID
+  //       branch
+  //       tabs {
+  //         items {
+  //           id
+  //           name
+  //           availability
+  //           createdAt
+  //           updatedAt
+  //           panelID
+  //           versionID
+  //           priority
+  //           route
+  //           parentID
+  //           description
+  //           maxWidth
+  //           backgroundColor
+  //           seo
+  //         }
+  //         nextToken
+  //       }
+  //     }
+  //   }
+  // `;
 
-  let tabList = [];
-  let tabScreen = null;
-  let favicon = null;
-  let title = null;
-  let targetTabId = null;
+  // let tabList = [];
+  // let tabScreen = null;
+  // let favicon = null;
+  // let title = null;
+  // let targetTabId = null;
 
-  const getVersionTab = await axios({
-    url: process.env.GRAPHQL_ENDPOINT,
-    method: 'post',
-    headers: {
-        'x-api-key': process.env.GRAPHQL_API_KEY
-    },
-    data: {
-        query: print(getVersion),
-        variables: {
-          id: process.env.VERSION_ID
-        }
-    }
-  });
-  getVersionTab.data.data.getVersion.tabs.items.map((tab)=>{
-    tabList.push({ id : tab.id , route : tab.route })
-    // if(tab.id === params.route) targetTabId = tab.id;
-    // if(tab.route === params.route) targetTabId = tab.id
-  })
-  const rootRoute = getVersionTab.data.data.getVersion.tabs.items.filter((tab)=>tab.route === "");
-  if(rootRoute.length === 1) targetTabId = rootRoute[0]['id'];
-  if(rootRoute.length === 0) targetTabId = getVersionTab.data.data.getVersion.tabs.items[0]['id'];
+  // const getVersionTab = await axios({
+  //   url: process.env.GRAPHQL_ENDPOINT,
+  //   method: 'post',
+  //   headers: {
+  //       'x-api-key': process.env.GRAPHQL_API_KEY
+  //   },
+  //   data: {
+  //       query: print(getVersion),
+  //       variables: {
+  //         id: process.env.VERSION_ID
+  //       }
+  //   }
+  // });
+  // getVersionTab.data.data.getVersion.tabs.items.map((tab)=>{
+  //   tabList.push({ id : tab.id , route : tab.route })
+  //   // if(tab.id === params.route) targetTabId = tab.id;
+  //   // if(tab.route === params.route) targetTabId = tab.id
+  // })
+  // const rootRoute = getVersionTab.data.data.getVersion.tabs.items.filter((tab)=>tab.route === "");
+  // if(rootRoute.length === 1) targetTabId = rootRoute[0]['id'];
+  // if(rootRoute.length === 0) targetTabId = getVersionTab.data.data.getVersion.tabs.items[0]['id'];
  
-  console.log('Target Tab ID',targetTabId);
+  // console.log('Target Tab ID',targetTabId);
 
-  const getPanelRequest = await axios({
-    url: process.env.GRAPHQL_ENDPOINT,
-    method: 'post',
-    headers: {
-        'x-api-key': process.env.GRAPHQL_API_KEY
-    },
-    data: {
-        query: print(getPanel),
-        variables: {
-          id: process.env.PANEL_ID
-        }
-    }
-  });
+  // const getPanelRequest = await axios({
+  //   url: process.env.GRAPHQL_ENDPOINT,
+  //   method: 'post',
+  //   headers: {
+  //       'x-api-key': process.env.GRAPHQL_API_KEY
+  //   },
+  //   data: {
+  //       query: print(getPanel),
+  //       variables: {
+  //         id: process.env.PANEL_ID
+  //       }
+  //   }
+  // });
 
-  if(getPanelRequest.data.data.getPanel.favicon !== null){
-    const faviconSrc = await Storage.get(getPanelRequest.data.data.getPanel.favicon , { level: 'public' });
-    title = getPanelRequest.data.data.getPanel.name;
-    let image = await axios.get(faviconSrc, {responseType: 'arraybuffer'});
-    let returnedB64 = Buffer.from(image.data).toString('base64');
-    if(returnedB64){
-      favicon = returnedB64;
-    }
-  }
+  // if(getPanelRequest.data.data.getPanel.favicon !== null){
+  //   const faviconSrc = await Storage.get(getPanelRequest.data.data.getPanel.favicon , { level: 'public' });
+  //   title = getPanelRequest.data.data.getPanel.name;
+  //   let image = await axios.get(faviconSrc, {responseType: 'arraybuffer'});
+  //   let returnedB64 = Buffer.from(image.data).toString('base64');
+  //   if(returnedB64){
+  //     favicon = returnedB64;
+  //   }
+  // }
 
-  const getTabRequest = await axios({
-    url: process.env.GRAPHQL_ENDPOINT,
-    method: 'post',
-    headers: {
-        'x-api-key': process.env.GRAPHQL_API_KEY
-    },
-    data: {
-        query: print(getTab),
-        variables: {
-          id : targetTabId
-        }
-    }
-  }); 
-  // console.log('Tab Object',getTabRequest.data.data.getTab);
-  const tabGridAccordingtoSize = await axios({
-    url: process.env.GRAPHQL_ENDPOINT,
-    method: 'post',
-    headers: {
-        'x-api-key': process.env.GRAPHQL_API_KEY
-    },
-    data: {
-        query: print(byTabAndScreenSize),
-        variables: {
-          tabID : targetTabId,
-          // breakPoint: { eq : currentBreakPoint },
-          limit : 10000
-        }
-    }
-  });
-  // console.log('Grid by Tab',tabGridAccordingtoSize.data.data.byTabAndScreenSize);
-  tabScreen = tabGridAccordingtoSize.data.data.byTabAndScreenSize;
+  // const getTabRequest = await axios({
+  //   url: process.env.GRAPHQL_ENDPOINT,
+  //   method: 'post',
+  //   headers: {
+  //       'x-api-key': process.env.GRAPHQL_API_KEY
+  //   },
+  //   data: {
+  //       query: print(getTab),
+  //       variables: {
+  //         id : targetTabId
+  //       }
+  //   }
+  // }); 
+  // // console.log('Tab Object',getTabRequest.data.data.getTab);
+  // const tabGridAccordingtoSize = await axios({
+  //   url: process.env.GRAPHQL_ENDPOINT,
+  //   method: 'post',
+  //   headers: {
+  //       'x-api-key': process.env.GRAPHQL_API_KEY
+  //   },
+  //   data: {
+  //       query: print(byTabAndScreenSize),
+  //       variables: {
+  //         tabID : targetTabId,
+  //         // breakPoint: { eq : currentBreakPoint },
+  //         limit : 10000
+  //       }
+  //   }
+  // });
+  // // console.log('Grid by Tab',tabGridAccordingtoSize.data.data.byTabAndScreenSize);
+  // tabScreen = tabGridAccordingtoSize.data.data.byTabAndScreenSize;
 
-  const recursiveGridCheck = async(grid)=>{
-    if(grid.component.type === 'grid'){
-      if(grid.component.props !== null){
-        let gridItemProps = JSON.parse(grid.component.props);
-        if(gridItemProps['default']['backgroundImage']){
-          if(gridItemProps['default']['backgroundImage']['key']){
-            if(!gridItemProps['default']['backgroundImage']['key'].includes('https://')) {
-              const imgSrc = await Storage.get(gridItemProps['default']['backgroundImage']['key'] , { level: 'public'  });
-              let image = await axios.get(imgSrc, {responseType: 'arraybuffer'});
-              let returnedB64 = Buffer.from(image.data).toString('base64');
-              if(returnedB64){
-                gridItemProps['default']['backgroundImage']['image']  = returnedB64;
-                grid.component.props = JSON.stringify(gridItemProps);
-              }
-            };
-          }
-        }
-      }
-      const componentGridAccordingtoSize = await axios({
-          url: process.env.GRAPHQL_ENDPOINT,
-          method: 'post',
-          headers: {
-              'x-api-key': process.env.GRAPHQL_API_KEY
-          },
-          data: {
-              query: print(byComponentAndScreenSize),
-              variables: {
-                componentID : grid.component.id,
-                // breakPoint:  { eq : breakPoint },
-                limit : 10000
-              }
-          }
-      });
-      if(componentGridAccordingtoSize.data.errors) console.log('GraphQL Error',componentGridAccordingtoSize.data.errors);
-      const allScreenGrid = await Promise.all(componentGridAccordingtoSize.data.data.byComponentAndScreenSize.items.map(async(screen)=>{
-        const allScreenGridComp = await Promise.all(screen.grids.items.map(async(grid)=>{
-          return await recursiveGridCheck(grid);
-        }))
-        screen.grids = allScreenGridComp;
-        return screen;
-      }))
-      grid.component.grids.items = allScreenGrid;
-      return grid;
-    } else {
-      if(grid.component.type == 'image' && grid.component.props !== null){
-        let itemProps = JSON.parse(grid.component.props);
-        // console.log(imageProps);
-        if(itemProps['default'] && itemProps['default']['image']){
-          if(itemProps['default']['image']['key']){
-              // console.log('New Context',itemProps['default']['image']['key']);
-              if(!itemProps['default']['image']['key'].includes('https://')) {
-                // const imgSrc = await s3.getObject({ Bucket: process.env.STORAGE_FLEXPANELSTORAGE_BUCKETNAME, Key: 'public/'+itemProps['default']['image']['key'] }).promise();
-                const imgSrc = await Storage.get(itemProps['default']['image']['key'] , { level: 'public'  });
-                let image = await axios.get(imgSrc, {responseType: 'arraybuffer'});
-                let returnedB64 = Buffer.from(image.data).toString('base64');
-                if(returnedB64){
-                  itemProps['default']['image']  = returnedB64;
-                  grid.component.props = JSON.stringify(itemProps);
-                }
-              }
-          }
-        }
-      }
-      return grid
-    }
-  }
+  // const recursiveGridCheck = async(grid)=>{
+  //   if(grid.component.type === 'grid'){
+  //     if(grid.component.props !== null){
+  //       let gridItemProps = JSON.parse(grid.component.props);
+  //       if(gridItemProps['default']['backgroundImage']){
+  //         if(gridItemProps['default']['backgroundImage']['key']){
+  //           if(!gridItemProps['default']['backgroundImage']['key'].includes('https://')) {
+  //             const imgSrc = await Storage.get(gridItemProps['default']['backgroundImage']['key'] , { level: 'public'  });
+  //             let image = await axios.get(imgSrc, {responseType: 'arraybuffer'});
+  //             let returnedB64 = Buffer.from(image.data).toString('base64');
+  //             if(returnedB64){
+  //               gridItemProps['default']['backgroundImage']['image']  = returnedB64;
+  //               grid.component.props = JSON.stringify(gridItemProps);
+  //             }
+  //           };
+  //         }
+  //       }
+  //     }
+  //     const componentGridAccordingtoSize = await axios({
+  //         url: process.env.GRAPHQL_ENDPOINT,
+  //         method: 'post',
+  //         headers: {
+  //             'x-api-key': process.env.GRAPHQL_API_KEY
+  //         },
+  //         data: {
+  //             query: print(byComponentAndScreenSize),
+  //             variables: {
+  //               componentID : grid.component.id,
+  //               // breakPoint:  { eq : breakPoint },
+  //               limit : 10000
+  //             }
+  //         }
+  //     });
+  //     if(componentGridAccordingtoSize.data.errors) console.log('GraphQL Error',componentGridAccordingtoSize.data.errors);
+  //     const allScreenGrid = await Promise.all(componentGridAccordingtoSize.data.data.byComponentAndScreenSize.items.map(async(screen)=>{
+  //       const allScreenGridComp = await Promise.all(screen.grids.items.map(async(grid)=>{
+  //         return await recursiveGridCheck(grid);
+  //       }))
+  //       screen.grids = allScreenGridComp;
+  //       return screen;
+  //     }))
+  //     grid.component.grids.items = allScreenGrid;
+  //     return grid;
+  //   } else {
+  //     if(grid.component.type == 'image' && grid.component.props !== null){
+  //       let itemProps = JSON.parse(grid.component.props);
+  //       // console.log(imageProps);
+  //       if(itemProps['default'] && itemProps['default']['image']){
+  //         if(itemProps['default']['image']['key']){
+  //             // console.log('New Context',itemProps['default']['image']['key']);
+  //             if(!itemProps['default']['image']['key'].includes('https://')) {
+  //               // const imgSrc = await s3.getObject({ Bucket: process.env.STORAGE_FLEXPANELSTORAGE_BUCKETNAME, Key: 'public/'+itemProps['default']['image']['key'] }).promise();
+  //               const imgSrc = await Storage.get(itemProps['default']['image']['key'] , { level: 'public'  });
+  //               let image = await axios.get(imgSrc, {responseType: 'arraybuffer'});
+  //               let returnedB64 = Buffer.from(image.data).toString('base64');
+  //               if(returnedB64){
+  //                 itemProps['default']['image']  = returnedB64;
+  //                 grid.component.props = JSON.stringify(itemProps);
+  //               }
+  //             }
+  //         }
+  //       }
+  //     }
+  //     return grid
+  //   }
+  // }
 
-  const allScreenGrid = await Promise.all(tabScreen.items.map(async(screen)=>{
-    // console.log('Tab Screen',screen);
-    const allScreenGridComp = await Promise.all(screen.grids.items.map(async(grid)=>{
-      // return recursiveGridCheck(grid);
-      if(grid.component.type === 'grid'){
-        // console.log('Tab grid',grid);
-        // console.log(grid.component.grids);
-        // const res = await recursiveGridCheck(grid,recursive);
-        // grid.component.grids.items = recursiveGridCheck(grid,recursive);
-        // console.log('Res',res);
-        // grid.component.grids.items = await recursiveGridCheck(grid,recursive);
-        // grid = await recursiveGridCheck(grid,recursive);
-        // recursive++;
-        // grid.
-        return await recursiveGridCheck(grid);
-      } else {
-        // console.log('Recursive End',grid.component.type);
-        // recursiveEnd++;
-        return grid;
-      }
+  // const allScreenGrid = await Promise.all(tabScreen.items.map(async(screen)=>{
+  //   // console.log('Tab Screen',screen);
+  //   const allScreenGridComp = await Promise.all(screen.grids.items.map(async(grid)=>{
+  //     // return recursiveGridCheck(grid);
+  //     if(grid.component.type === 'grid'){
+  //       // console.log('Tab grid',grid);
+  //       // console.log(grid.component.grids);
+  //       // const res = await recursiveGridCheck(grid,recursive);
+  //       // grid.component.grids.items = recursiveGridCheck(grid,recursive);
+  //       // console.log('Res',res);
+  //       // grid.component.grids.items = await recursiveGridCheck(grid,recursive);
+  //       // grid = await recursiveGridCheck(grid,recursive);
+  //       // recursive++;
+  //       // grid.
+  //       return await recursiveGridCheck(grid);
+  //     } else {
+  //       // console.log('Recursive End',grid.component.type);
+  //       // recursiveEnd++;
+  //       return grid;
+  //     }
 
-    }))
-    screen.grids.items = allScreenGridComp;
-    return screen;
-  }))
-  // tabScreen.items = allScreenGrid
+  //   }))
+  //   screen.grids.items = allScreenGridComp;
+  //   return screen;
+  // }))
+  // // tabScreen.items = allScreenGrid
 
-  getTabRequest.data.data.getTab.screens = {};
-  getTabRequest.data.data.getTab.screens.items = allScreenGrid
+  // getTabRequest.data.data.getTab.screens = {};
+  // getTabRequest.data.data.getTab.screens.items = allScreenGrid
 
-  if(getTabRequest.data.data.getTab['backgroundColor'] !== null) getTabRequest.data.data.getTab['backgroundColor'] = JSON.parse(getTabRequest.data.data.getTab['backgroundColor'])
+  // if(getTabRequest.data.data.getTab['backgroundColor'] !== null) getTabRequest.data.data.getTab['backgroundColor'] = JSON.parse(getTabRequest.data.data.getTab['backgroundColor'])
   
-  // console.log(recursive);
-  // console.log(recursiveEnd);
-  console.log('Page Object',getTabRequest.data.data.getTab.screens.items);
-  return { props : { page : getTabRequest.data.data.getTab , tabList : [] , favicon : favicon , title : title } }
+  // // console.log(recursive);
+  // // console.log(recursiveEnd);
+  // console.log('Page Object',getTabRequest.data.data.getTab.screens.items);
+  // return { props : { page : getTabRequest.data.data.getTab , tabList : [] , favicon : favicon , title : title } }
 
   // const uiGenerator = gql`
   //   mutation UiGenerator($panelID: String, $versionID: String, $userID: String) {
