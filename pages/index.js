@@ -69,13 +69,13 @@ export async function getStaticProps({ params }) {
       "aws_user_files_s3_bucket_region": "us-east-1"
   });
   // console.log('Test Template',TestTemplate.name);
-  // const panelTemplateJSON = await Storage.get(`panel-${process.env.PANEL_ID}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
-  const panelTemplateJSON = await Storage.get(`panel-${process.env.PANEL_ID}.json` , { level: 'public' , download : true });
+  const panelTemplateJSON = await Storage.get(`panel-${process.env.PANEL_ID}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
+  // const panelTemplateJSON = await Storage.get(`panel-${process.env.PANEL_ID}.json` , { level: 'public' , download : true });
   // console.log(panelTemplateJSON);
   const panel = await panelTemplateJSON.Body;
   // console.log('Panel JSON Template',panel);
-  // const firstTabTemplateJSON = await Storage.get(`tab-${panel.tabs[0]}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
-  const firstTabTemplateJSON = await Storage.get(`tab-${panel.tabs[0]}.json` , { level: 'public' , download : true });
+  const firstTabTemplateJSON = await Storage.get(`tab-${panel.tabs[0]}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
+  // const firstTabTemplateJSON = await Storage.get(`tab-${panel.tabs[0]}.json` , { level: 'public' , download : true });
   const firstTab = await firstTabTemplateJSON.Body;
   // console.log('First Tab JSON Template',firstTab);
 
