@@ -4,21 +4,7 @@ import { useRouter } from 'next/router';
 import Grid from '../src/component/panel/grid';
 // import styles from '../styles/Home.module.css'
 import Amplify, { Storage } from 'aws-amplify';
-Amplify.configure({ 
-    "aws_project_region": "us-east-1",
-    "aws_cognito_identity_pool_id": "us-east-1:c3faeb6c-0d99-4354-a48f-254d5d245d07",
-    "aws_cognito_region": "us-east-1",
-    "aws_user_pools_id": "us-east-1_DVqghGqEM",
-    "aws_user_pools_web_client_id": "66u8kmqjp59522q3858hqugt7d",
-    "oauth": {},
-    "aws_appsync_graphqlEndpoint": "https://ps4ky2nur5crxkjfkldkifixk4.appsync-api.us-east-1.amazonaws.com/graphql",
-    "aws_appsync_region": "us-east-1",
-    "aws_appsync_authenticationType": "API_KEY",
-    "aws_appsync_apiKey": "da2-2hwjj5un6rempchkqdmjci2vfe",
-    "aws_user_files_s3_bucket": "flexpanel6ed38163d00647a6ba3ac8d8dac7f5a4102144-dev",
-    "aws_user_files_s3_bucket_region": "us-east-1"
-});
-import TestTemplate from '../public/test6.json';
+// import TestTemplate from '../public/test6.json';
 
 
 // export async function getStaticPaths() {
@@ -64,8 +50,29 @@ import TestTemplate from '../public/test6.json';
 // }
 
 export async function getStaticProps({ params }) {
+  Amplify.configure({ 
+      "aws_project_region": "us-east-1",
+      "aws_cognito_identity_pool_id": "us-east-1:c3faeb6c-0d99-4354-a48f-254d5d245d07",
+      "aws_cognito_region": "us-east-1",
+      "aws_user_pools_id": "us-east-1_DVqghGqEM",
+      "aws_user_pools_web_client_id": "66u8kmqjp59522q3858hqugt7d",
+      "oauth": {},
+      "aws_appsync_graphqlEndpoint": "https://ps4ky2nur5crxkjfkldkifixk4.appsync-api.us-east-1.amazonaws.com/graphql",
+      "aws_appsync_region": "us-east-1",
+      "aws_appsync_authenticationType": "API_KEY",
+      "aws_appsync_apiKey": "da2-2hwjj5un6rempchkqdmjci2vfe",
+      "aws_user_files_s3_bucket": "flexpanel6ed38163d00647a6ba3ac8d8dac7f5a4102144-dev",
+      "aws_user_files_s3_bucket_region": "us-east-1"
+  });
   // console.log('Test Template',TestTemplate.name);
-  return { props : { page : TestTemplate , title : TestTemplate.name , favicon : null , tabList : [] } }
+  const panelTemplateJSON = await Storage.get(`panel-${process.env.PANEL_ID}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
+  // console.log(panelTemplateJSON);
+  const panel = await panelTemplateJSON.Body;
+  console.log('Panel JSON Template',panel);
+  const firstTabTemplateJSON = await Storage.get(`tab-${panel.tabs[0]}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
+  const firstTab = await firstTabTemplateJSON.Body;
+  console.log('First Tab JSON Template',firstTab);
+  return { props : { page : firstTab, title : firstTab.name , favicon : null , tabList : [] } }
   // console.log('API Params',process.env.GRAPHQL_ENDPOINT);
   // const axios = require('axios');
   // const gql = require('graphql-tag');
