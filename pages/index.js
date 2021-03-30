@@ -50,6 +50,10 @@ import Amplify, { Storage } from 'aws-amplify';
 // }
 
 export async function getStaticProps({ params }) {
+  const axios = require('axios');
+  const gql = require('graphql-tag');
+  const graphql = require('graphql');
+  const { print } = graphql;
   Amplify.configure({ 
       "aws_project_region": "us-east-1",
       "aws_cognito_identity_pool_id": "us-east-1:c3faeb6c-0d99-4354-a48f-254d5d245d07",
@@ -65,13 +69,96 @@ export async function getStaticProps({ params }) {
       "aws_user_files_s3_bucket_region": "us-east-1"
   });
   // console.log('Test Template',TestTemplate.name);
-  const panelTemplateJSON = await Storage.get(`panel-${process.env.PANEL_ID}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
+  // const panelTemplateJSON = await Storage.get(`panel-${process.env.PANEL_ID}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
+  const panelTemplateJSON = await Storage.get(`panel-${process.env.PANEL_ID}.json` , { level: 'public' , download : true });
   // console.log(panelTemplateJSON);
   const panel = await panelTemplateJSON.Body;
-  console.log('Panel JSON Template',panel);
-  const firstTabTemplateJSON = await Storage.get(`tab-${panel.tabs[0]}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
+  // console.log('Panel JSON Template',panel);
+  // const firstTabTemplateJSON = await Storage.get(`tab-${panel.tabs[0]}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
+  const firstTabTemplateJSON = await Storage.get(`tab-${panel.tabs[0]}.json` , { level: 'public' , download : true });
   const firstTab = await firstTabTemplateJSON.Body;
-  console.log('First Tab JSON Template',firstTab);
+  // console.log('First Tab JSON Template',firstTab);
+
+  const recursiveGridCheck = async(grid)=>{
+    if(grid.component.type === 'grid'){
+      // console.log('Check Item',item);
+      if(grid.component.props !== null){
+        let gridItemProps = grid.component.props;
+        // console.log(gridItemProps);
+        if(gridItemProps['default']['backgroundImage']){
+          if(gridItemProps['default']['backgroundImage']['key']){
+            if(!gridItemProps['default']['backgroundImage']['key'].includes('https://')) {
+              const imgSrc = await Storage.get(gridItemProps['default']['backgroundImage']['key'] , { level: 'public'  });
+              let image = await axios.get(imgSrc, {responseType: 'arraybuffer'});
+              let returnedB64 = Buffer.from(image.data).toString('base64');
+              if(returnedB64){
+                gridItemProps['default']['backgroundImage']['image']  = returnedB64;
+                grid.component.props = gridItemProps;
+              }
+            };
+          }
+        }
+      }
+    //   // const allScreenGrid = await Promise.all(grid.items.map(async(screen)=>{
+    //   //   const allScreenGridComp = await Promise.all(screen.grids.items.map(async(grid)=>{
+    //   //     return await recursiveGridCheck(grid);
+    //   //   }))
+    //   //   screen.grids = allScreenGridComp;
+    //   //   return screen;
+    //   // }))
+    //   // grid.component.grids.items = allScreenGrid;
+      // return grid;
+    } else {
+      if(grid.component.type == 'image' && grid.component.props !== null){
+        let itemProps = grid.component.props;
+        // console.log(itemProps);
+        if(itemProps['default'] && itemProps['default']['image']){
+          if(itemProps['default']['image']['key']){
+              // console.log('New Context',itemProps['default']['image']['key']);
+              if(!itemProps['default']['image']['key'].includes('https://')) {
+                // const imgSrc = await s3.getObject({ Bucket: process.env.STORAGE_FLEXPANELSTORAGE_BUCKETNAME, Key: 'public/'+itemProps['default']['image']['key'] }).promise();
+                const imgSrc = await Storage.get(itemProps['default']['image']['key'] , { level: 'public'  });
+                // console.log('Image Src',imgSrc);
+                let image = await axios.get(imgSrc, {responseType: 'arraybuffer'});
+                let returnedB64 = Buffer.from(image.data).toString('base64');
+                if(returnedB64){
+                  itemProps['default']['image']  = returnedB64;
+                  grid.component.props = itemProps;
+                }
+              }
+          }
+        }
+      }
+      // return grid
+    }
+    // return item;
+  }
+
+  await Promise.all(firstTab.items.map(async(screen)=>{
+    // console.log('Tab Screen',screen);
+    await Promise.all(screen.grids.items.map(async(grid)=>{
+      // console.log('Tab Grid',grid.component.props);
+      // return recursiveGridCheck(grid);
+      await recursiveGridCheck(grid);
+      if(grid.component.type === 'grid'){
+        await Promise.all(
+          grid.component.grids.items.map(async(items)=>{
+            await Promise.all(
+              items.map(async(item)=>{
+                await recursiveGridCheck(item.grid);
+              })
+            )
+            // console.log(items);
+          })
+        )
+      } else {
+        return grid;
+      }
+    }))
+    // screen.grids.items = allScreenGridComp;
+    // return screen;
+  }))
+
   return { props : { page : firstTab, title : firstTab.name , favicon : null , tabList : [] } }
   // console.log('API Params',process.env.GRAPHQL_ENDPOINT);
   // const axios = require('axios');
@@ -517,7 +604,7 @@ export async function getStaticProps({ params }) {
 }
 
 export default function Home({ page , title , favicon , tabList }) {
-  // console.log(page);
+  console.log(page);
   const router = useRouter();
   return (
     <div>
