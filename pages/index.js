@@ -91,7 +91,7 @@ export async function getStaticProps({ params }) {
   if(firstTab['backgroundColor'] !== null) firstTab['backgroundColor'] = JSON.parse(firstTab['backgroundColor'])
   if(firstTab['seo'] !== null) firstTab['seo'] = JSON.parse(firstTab['seo'])
   // console.log('First Tab JSON Template',firstTab);
-  if(firstTab['seo']['ogImg']){
+  if(firstTab['seo'] && firstTab['seo']['ogImg']){
     const imgSEOSrc = await Storage.get(`${firstTab['seo']['ogImg']}` , { level: 'public' });
     let imageSEO = await axios.get(imgSEOSrc, {responseType: 'arraybuffer'});
     let returnedB64SEO= Buffer.from(imageSEO.data).toString('base64');
@@ -636,7 +636,7 @@ export async function getStaticProps({ params }) {
 }
 
 export default function Home({ page , title , favicon , tabList }) {
-  console.log(page);
+  // console.log(page);
   const router = useRouter();
   return (
     <div>
