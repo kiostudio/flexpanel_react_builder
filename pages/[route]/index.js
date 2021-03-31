@@ -24,9 +24,9 @@ export async function getStaticPaths() {
   // const panelTemplateJSON = await Storage.get(`panel-${process.env.PANEL_ID}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
   const panelTemplateJSON = await Storage.get(`panel-${process.env.PANEL_ID}.json` , { level: 'public' , download : true });
   const panel = await panelTemplateJSON.Body;
-  console.log('Panel JSON Template',panel);
+  // console.log('Panel JSON Template',panel);
   let templatePath = [];
-  panel.tabs.map((tabObj)=>templatePath.push({ params : { route : tabObj.id } }));
+  panel.tabs.map((tabObj)=>templatePath.push({ params : { route : (tabObj.route) ? tabObj.route : tabObj.id } }));
   return { paths : templatePath , fallback : false }
     // const axios = require('axios');
     // const gql = require('graphql-tag');
@@ -126,11 +126,31 @@ export async function getStaticProps({ params }) {
   // const gql = require('graphql-tag');
   // const graphql = require('graphql');
   // const { print } = graphql;
-  console.log('TabId',params.route);
+  const panelTemplateJSON = await Storage.get(`panel-${process.env.PANEL_ID}.json` , { level: 'public' , download : true });
+  // console.log(panelTemplateJSON);
+  const panel = await panelTemplateJSON.Body;
+  if(panel.favicon){
+    const imgFaviconSrc = await Storage.get(`${panel.favicon}` , { level: 'public' });
+    let imageFavicon = await axios.get(imgFaviconSrc, {responseType: 'arraybuffer'});
+    let returnedB64Favicon = Buffer.from(imageFavicon.data).toString('base64');
+    panel.favicon = returnedB64Favicon;
+  }
+  // console.log('TabId',params.route);
+  const targetTabId = panel.tabs.filter((tabObj)=>{
+    return (tabObj.id === params.route || tabObj.route === params.route);
+  })
   // const tabTemplateJSON = await Storage.get(`tab-${params.route}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
-  const tabTemplateJSON = await Storage.get(`tab-${params.route}.json` , { level: 'public' , download : true });
+  const tabTemplateJSON = await Storage.get(`tab-${targetTabId[0]['id']}.json` , { level: 'public' , download : true });
   const tab = await tabTemplateJSON.Body;
-  console.log('Tab JSON Template',tab);
+  if(tab['backgroundColor'] !== null) tab['backgroundColor'] = JSON.parse(tab['backgroundColor'])
+  if(tab['seo'] !== null) tab['seo'] = JSON.parse(tab['seo'])
+  if(tab['seo']['ogImg']){
+    const imgSEOSrc = await Storage.get(`${firstTab['seo']['ogImg']}` , { level: 'public' });
+    let imageSEO = await axios.get(imgSEOSrc, {responseType: 'arraybuffer'});
+    let returnedB64SEO= Buffer.from(imageSEO.data).toString('base64');
+    tab['seo']['ogImg'] = returnedB64SEO;
+  }
+  // console.log('Tab JSON Template',tab);
 
   const recursiveGridCheck = async(grid)=>{
     if(grid.component.type === 'grid'){
@@ -205,7 +225,7 @@ export async function getStaticProps({ params }) {
   }))
 
   // params.route
-  return { props : { page : tab , tabList : [] , favicon : null , title : tab.name } };
+  return { props : { page : tab , tabList : [] , favicon : panel.favicon , title : panel.name } };
   // const axios = require('axios');
   // const gql = require('graphql-tag');
   // const graphql = require('graphql');
@@ -693,9 +713,17 @@ export default function Home({ page , tabList, title , favicon }) {
   return (
     <div>
       <Head>
-        <title>{`${page.name} | ${title}`}</title>
-        <meta name="description" content={`${(page && page.description) ? page.description : `${title} is an application build with Flexpanel, which is a tool to build software without coding.`}`}/>
+        <title>{(page.seo && page.seo.ogTitle) ? page.seo.ogTitle :`${page.name} | ${title}`}</title>
+        <meta name="description" content={(page.seo && page.seo.ogDescription) ? page.seo.ogDescription : `${(page && page.description) ? page.description : `${title} is an application build with Flexpanel, which is a tool to build software without coding.`}`}/>
+        <meta property="og:title" content={(page.seo && page.seo.ogTitle) ? page.seo.ogTitle : `${page.name} | ${title}`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:type" content="flexpanel.website" />
+        <meta property="og:description" content={(page.seo && page.seo.ogDescription) ? page.seo.ogDescription : `${title} is an application build with Flexpanel, which is a tool to build software without coding.`}/>
+        <meta property="og:image" content={(page.seo && page.seo.ogImg) ? `data:image/png;base64,${page.seo.ogImg}` : null}/>
         <link rel="icon" href={(favicon !== null) ? `data:image/png;base64,${favicon}` :"/favicon.ico"}/>
+        {/* <title>{`${page.name} | ${title}`}</title> */}
+        {/* <meta name="description" content={`${(page && page.description) ? page.description : `${title} is an application build with Flexpanel, which is a tool to build software without coding.`}`}/> */}
+        {/* <link rel="icon" href={(favicon !== null) ? `data:image/png;base64,${favicon}` :"/favicon.ico"}/> */}
       </Head>
       <main style={{
         ...styles.mainContainer,

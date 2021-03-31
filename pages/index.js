@@ -51,9 +51,9 @@ import Amplify, { Storage } from 'aws-amplify';
 
 export async function getStaticProps({ params }) {
   const axios = require('axios');
-  const gql = require('graphql-tag');
-  const graphql = require('graphql');
-  const { print } = graphql;
+  // const gql = require('graphql-tag');
+  // const graphql = require('graphql');
+  // const { print } = graphql;
   Amplify.configure({ 
       "aws_project_region": "us-east-1",
       "aws_cognito_identity_pool_id": "us-east-1:c3faeb6c-0d99-4354-a48f-254d5d245d07",
@@ -73,11 +73,30 @@ export async function getStaticProps({ params }) {
   const panelTemplateJSON = await Storage.get(`panel-${process.env.PANEL_ID}.json` , { level: 'public' , download : true });
   // console.log(panelTemplateJSON);
   const panel = await panelTemplateJSON.Body;
+  if(panel.favicon){
+    const imgFaviconSrc = await Storage.get(`${panel.favicon}` , { level: 'public' });
+    let imageFavicon = await axios.get(imgFaviconSrc, {responseType: 'arraybuffer'});
+    let returnedB64Favicon = Buffer.from(imageFavicon.data).toString('base64');
+    panel.favicon = returnedB64Favicon;
+  }
   // console.log('Panel JSON Template',panel);
+  let homePageObj = null;
+  homePageObj = panel.tabs.filter((tab)=>tab.route === "");
+  if(homePageObj.length > 0) homePageObj = homePageObj[0];
+  if(homePageObj.length === 0) homePageObj = panel.tabs[0];
+  console.log('Home Page Obj',homePageObj);
   // const firstTabTemplateJSON = await Storage.get(`tab-${panel.tabs[0]}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
-  const firstTabTemplateJSON = await Storage.get(`tab-${panel.tabs[0]['id']}.json` , { level: 'public' , download : true });
+  const firstTabTemplateJSON = await Storage.get(`tab-${homePageObj['id']}.json` , { level: 'public' , download : true });
   const firstTab = await firstTabTemplateJSON.Body;
+  if(firstTab['backgroundColor'] !== null) firstTab['backgroundColor'] = JSON.parse(firstTab['backgroundColor'])
+  if(firstTab['seo'] !== null) firstTab['seo'] = JSON.parse(firstTab['seo'])
   // console.log('First Tab JSON Template',firstTab);
+  if(firstTab['seo']['ogImg']){
+    const imgSEOSrc = await Storage.get(`${firstTab['seo']['ogImg']}` , { level: 'public' });
+    let imageSEO = await axios.get(imgSEOSrc, {responseType: 'arraybuffer'});
+    let returnedB64SEO= Buffer.from(imageSEO.data).toString('base64');
+    firstTab['seo']['ogImg'] = returnedB64SEO;
+  }
 
   const recursiveGridCheck = async(grid)=>{
     if(grid.component.type === 'grid'){
@@ -172,7 +191,7 @@ export async function getStaticProps({ params }) {
     // return screen;
   }))
 
-  return { props : { page : firstTab, title : firstTab.name , favicon : null , tabList : [] } }
+  return { props : { page : firstTab, title : panel.name , favicon : panel.favicon , tabList : [] } }
   // console.log('API Params',process.env.GRAPHQL_ENDPOINT);
   // const axios = require('axios');
   // const gql = require('graphql-tag');
@@ -624,11 +643,11 @@ export default function Home({ page , title , favicon , tabList }) {
       <Head>
         <title>{(page.seo && page.seo.ogTitle) ? page.seo.ogTitle :`${page.name} | ${title}`}</title>
         <meta name="description" content={(page.seo && page.seo.ogDescription) ? page.seo.ogDescription : `${(page && page.description) ? page.description : `${title} is an application build with Flexpanel, which is a tool to build software without coding.`}`}/>
-        {/* <meta property="og:title" content={(page.seo && page.seo.ogTitle) ? page.seo.ogTitle : `${page.name} | ${title}`} /> */}
-        {/* <meta property="og:type" content="website" />
+        <meta property="og:title" content={(page.seo && page.seo.ogTitle) ? page.seo.ogTitle : `${page.name} | ${title}`} />
+        <meta property="og:type" content="website" />
         <meta property="og:type" content="flexpanel.website" />
-        <meta property="og:description" content={(page.seo && page.seo.ogDescription) ? page.seo.ogDescription : `${title} is an application build with Flexpanel, which is a tool to build software without coding.`}/> */}
-        {/* <meta property="og:image" content={(page.seo && page.seo.ogImg) ? `data:image/png;base64,${page.seo.ogImg}` : null}/> */}
+        <meta property="og:description" content={(page.seo && page.seo.ogDescription) ? page.seo.ogDescription : `${title} is an application build with Flexpanel, which is a tool to build software without coding.`}/>
+        <meta property="og:image" content={(page.seo && page.seo.ogImg) ? `data:image/png;base64,${page.seo.ogImg}` : null}/>
         <link rel="icon" href={(favicon !== null) ? `data:image/png;base64,${favicon}` :"/favicon.ico"}/>
       </Head>
       <main style={{
