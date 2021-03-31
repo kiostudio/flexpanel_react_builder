@@ -75,7 +75,7 @@ export async function getStaticProps({ params }) {
   const panel = await panelTemplateJSON.Body;
   // console.log('Panel JSON Template',panel);
   // const firstTabTemplateJSON = await Storage.get(`tab-${panel.tabs[0]}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
-  const firstTabTemplateJSON = await Storage.get(`tab-${panel.tabs[0]}.json` , { level: 'public' , download : true });
+  const firstTabTemplateJSON = await Storage.get(`tab-${panel.tabs[0]['id']}.json` , { level: 'public' , download : true });
   const firstTab = await firstTabTemplateJSON.Body;
   // console.log('First Tab JSON Template',firstTab);
 

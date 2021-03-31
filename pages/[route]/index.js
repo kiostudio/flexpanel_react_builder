@@ -26,7 +26,7 @@ export async function getStaticPaths() {
   const panel = await panelTemplateJSON.Body;
   console.log('Panel JSON Template',panel);
   let templatePath = [];
-  panel.tabs.map((tabId)=>templatePath.push({ params : { route : tabId } }));
+  panel.tabs.map((tabObj)=>templatePath.push({ params : { route : tabObj.id } }));
   return { paths : templatePath , fallback : false }
     // const axios = require('axios');
     // const gql = require('graphql-tag');
