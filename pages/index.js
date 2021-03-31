@@ -69,13 +69,13 @@ export async function getStaticProps({ params }) {
       "aws_user_files_s3_bucket_region": "us-east-1"
   });
   // console.log('Test Template',TestTemplate.name);
-  const panelTemplateJSON = await Storage.get(`panel-${process.env.PANEL_ID}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
-  // const panelTemplateJSON = await Storage.get(`panel-${process.env.PANEL_ID}.json` , { level: 'public' , download : true });
+  // const panelTemplateJSON = await Storage.get(`panel-${process.env.PANEL_ID}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
+  const panelTemplateJSON = await Storage.get(`panel-${process.env.PANEL_ID}.json` , { level: 'public' , download : true });
   // console.log(panelTemplateJSON);
   const panel = await panelTemplateJSON.Body;
   // console.log('Panel JSON Template',panel);
-  const firstTabTemplateJSON = await Storage.get(`tab-${panel.tabs[0]}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
-  // const firstTabTemplateJSON = await Storage.get(`tab-${panel.tabs[0]}.json` , { level: 'public' , download : true });
+  // const firstTabTemplateJSON = await Storage.get(`tab-${panel.tabs[0]}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
+  const firstTabTemplateJSON = await Storage.get(`tab-${panel.tabs[0]}.json` , { level: 'public' , download : true });
   const firstTab = await firstTabTemplateJSON.Body;
   // console.log('First Tab JSON Template',firstTab);
 
@@ -99,6 +99,19 @@ export async function getStaticProps({ params }) {
           }
         }
       }
+      // console.log('Sub Grid : ',grid.component)
+      // if(grid.component.grids.items.length > 0){
+        await Promise.all(
+          grid.component.grids.items.map(async(items)=>{
+            await Promise.all(
+              items.map(async(item)=>{
+                await recursiveGridCheck(item.grid);
+              })
+            )
+            // console.log(items);
+          })
+        )
+      // }
     //   // const allScreenGrid = await Promise.all(grid.items.map(async(screen)=>{
     //   //   const allScreenGridComp = await Promise.all(screen.grids.items.map(async(grid)=>{
     //   //     return await recursiveGridCheck(grid);
