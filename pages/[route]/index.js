@@ -21,7 +21,8 @@ Amplify.configure({
 
 
 export async function getStaticPaths() {
-  const panelTemplateJSON = await Storage.get(`panel-${process.env.PANEL_ID}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
+  // const panelTemplateJSON = await Storage.get(`panel-${process.env.PANEL_ID}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
+  const panelTemplateJSON = await Storage.get(`panel-${process.env.PANEL_ID}.json` , { level: 'public' , download : true });
   const panel = await panelTemplateJSON.Body;
   console.log('Panel JSON Template',panel);
   let templatePath = [];
@@ -121,9 +122,88 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const tabTemplateJSON = await Storage.get(`tab-${params.route}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
+  const axios = require('axios');
+  // const gql = require('graphql-tag');
+  // const graphql = require('graphql');
+  // const { print } = graphql;
+  console.log('TabId',params.route);
+  // const tabTemplateJSON = await Storage.get(`tab-${params.route}-${process.env.VERSION_ID}.json` , { level: 'public' , download : true });
+  const tabTemplateJSON = await Storage.get(`tab-${params.route}.json` , { level: 'public' , download : true });
   const tab = await tabTemplateJSON.Body;
   console.log('Tab JSON Template',tab);
+
+  const recursiveGridCheck = async(grid)=>{
+    if(grid.component.type === 'grid'){
+      // console.log('Check Item',item);
+      if(grid.component.props !== null){
+        let gridItemProps = grid.component.props;
+        // console.log(gridItemProps);
+        if(gridItemProps['default']['backgroundImage']){
+          if(gridItemProps['default']['backgroundImage']['key']){
+            if(!gridItemProps['default']['backgroundImage']['key'].includes('https://')) {
+              const imgSrc = await Storage.get(gridItemProps['default']['backgroundImage']['key'] , { level: 'public'  });
+              let image = await axios.get(imgSrc, {responseType: 'arraybuffer'});
+              let returnedB64 = Buffer.from(image.data).toString('base64');
+              if(returnedB64){
+                gridItemProps['default']['backgroundImage']['image']  = returnedB64;
+                grid.component.props = gridItemProps;
+              }
+            };
+          }
+        }
+      }
+        await Promise.all(
+          grid.component.grids.items.map(async(items)=>{
+            await Promise.all(
+              items.map(async(item)=>{
+                await recursiveGridCheck(item.grid);
+              })
+            )
+          })
+        )
+    } else {
+      if(grid.component.type == 'image' && grid.component.props !== null){
+        let itemProps = grid.component.props;
+        // console.log(itemProps);
+        if(itemProps['default'] && itemProps['default']['image']){
+          if(itemProps['default']['image']['key']){
+              // console.log('New Context',itemProps['default']['image']['key']);
+              if(!itemProps['default']['image']['key'].includes('https://')) {
+                // const imgSrc = await s3.getObject({ Bucket: process.env.STORAGE_FLEXPANELSTORAGE_BUCKETNAME, Key: 'public/'+itemProps['default']['image']['key'] }).promise();
+                const imgSrc = await Storage.get(itemProps['default']['image']['key'] , { level: 'public'  });
+                // console.log('Image Src',imgSrc);
+                let image = await axios.get(imgSrc, {responseType: 'arraybuffer'});
+                let returnedB64 = Buffer.from(image.data).toString('base64');
+                if(returnedB64){
+                  itemProps['default']['image']  = returnedB64;
+                  grid.component.props = itemProps;
+                }
+              }
+          }
+        }
+      }
+    }
+  }
+
+  await Promise.all(tab.items.map(async(screen)=>{
+    await Promise.all(screen.grids.items.map(async(grid)=>{
+      await recursiveGridCheck(grid);
+      if(grid.component.type === 'grid'){
+        await Promise.all(
+          grid.component.grids.items.map(async(items)=>{
+            await Promise.all(
+              items.map(async(item)=>{
+                await recursiveGridCheck(item.grid);
+              })
+            )
+          })
+        )
+      } else {
+        return grid;
+      }
+    }))
+  }))
+
   // params.route
   return { props : { page : tab , tabList : [] , favicon : null , title : tab.name } };
   // const axios = require('axios');
