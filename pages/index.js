@@ -191,7 +191,7 @@ export async function getStaticProps({ params }) {
     // return screen;
   }))
 
-  return { props : { page : firstTab, title : panel.name , favicon : panel.favicon , tabList : [] } }
+  return { props : { page : firstTab, title : panel.name , favicon : panel.favicon , tabList : panel.tabs } }
   // console.log('API Params',process.env.GRAPHQL_ENDPOINT);
   // const axios = require('axios');
   // const gql = require('graphql-tag');

@@ -110,7 +110,6 @@ function ButtonWidget({itemProps,itemActions,item,setTabId,displayTab,subDomainM
                             } else {
                                 url = '/'+value.id;
                             }
-
                         }
                     }
                 }

@@ -225,7 +225,7 @@ export async function getStaticProps({ params }) {
   }))
 
   // params.route
-  return { props : { page : tab , tabList : [] , favicon : panel.favicon , title : panel.name } };
+  return { props : { page : tab , tabList : panel.tabs , favicon : panel.favicon , title : panel.name } };
   // const axios = require('axios');
   // const gql = require('graphql-tag');
   // const graphql = require('graphql');
